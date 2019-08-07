@@ -1,0 +1,2522 @@
+<!doctype html>
+<html>
+    <head lang="en">
+         <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+        <title>Chi.Bio</title>
+
+ <!-- <script type="text/javascript" src="http://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js" charset="UTF-8"></script><script type="text/javascript" src="http://gc.kis.v2.scr.kaspersky-labs.com/72F1B19C-E074-9B40-B91F-39B55E2D1A9B/main.js" charset="UTF-8"></script><script type="text/javascript" src="http://gc.kis.v2.scr.kaspersky-labs.com/72F1B19C-E074-9B40-B91F-39B55E2D1A9B/main.js" charset="UTF-8"></script><script type="text/javascript" src="http://gc.kis.v2.scr.kaspersky-labs.com/72F1B19C-E074-9B40-B91F-39B55E2D1A9B/main.js" charset="UTF-8"></script><script type="text/javascript" src="http://gc.kis.v2.scr.kaspersky-labs.com/72F1B19C-E074-9B40-B91F-39B55E2D1A9B/main.js" charset="UTF-8"></script><script type="text/javascript" src="http://gc.kis.v2.scr.kaspersky-labs.com/72F1B19C-E074-9B40-B91F-39B55E2D1A9B/main.js" charset="UTF-8"></script><script type="text/javascript" src="http://gc.kis.v2.scr.kaspersky-labs.com/72F1B19C-E074-9B40-B91F-39B55E2D1A9B/main.js" charset="UTF-8"></script><script type="text/javascript" src="http://gc.kis.v2.scr.kaspersky-labs.com/72F1B19C-E074-9B40-B91F-39B55E2D1A9B/main.js" charset="UTF-8"></script><script type="text/javascript" src="http://gc.kis.v2.scr.kaspersky-labs.com/72F1B19C-E074-9B40-B91F-39B55E2D1A9B/main.js" charset="UTF-8"></script>
+ -->
+ <script type="text/javascript" src="{{ url_for('static', filename='HTMLScripts.js') }}"></script>
+ 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!-- <meta http-equiv="expires" content="Mon, 26 Jul 1997 05:00:00 GMT"/> <meta http-equiv="pragma" content="no-cache" /> -->
+<?php header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); header('Cache-Control: no-store, no-cache, must-revalidate'); header('Cache-Control: post-check=0, pre-check=0', FALSE); header('Pragma: no-cache'); ?>
+
+<!-- Bootstrap Imports  --> 
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  
+ 
+
+    </head>
+    
+<body onload="getSysData()">
+
+<script>google.charts.load('current', {packages: ['corechart', 'line']});</script>
+
+
+
+<script> setInterval(getSysData,2000)</script>
+
+
+
+<div align="center"><h2>Chi.Bio Control V1.0</h2></div>   
+
+<hr>
+
+
+
+
+
+
+<div class="row no-gutters">
+  <div class="col-3" align='center'>
+       <h3><div id="TName">Turbidostat</div></h3>
+       
+     
+        <div class="row no-gutters">
+            
+            <div class="col align-self-center"></div>
+                
+            <div class="col-1 align-self-center">
+             <button id="Device0">M0</button> <br>
+          </div>
+          <div class="col-1 align-self-center">
+             <button id="Device1">M1</button> <br> 
+            </div>
+          <div class="col-1 align-self-center">
+             <button id="Device2">M2</button> <br> 
+          </div>
+          <div class="col-1 align-self-center">
+             <button id="Device3">M3</button> <br> 
+          </div>
+           <div class="col-1 align-self-center">
+             <button id="Device4">M4</button> <br> 
+          </div>
+           <div class="col-1 align-self-center">
+             <button id="Device5">M5</button> <br> 
+          </div>
+           <div class="col-1 align-self-center">
+             <button id="Device6">M6</button> <br> 
+          </div>
+           <div class="col-1 align-self-center">
+             <button id="Device7">M7</button> <br> 
+          </div>
+          <div class="col align-self-center"></div>
+      </div>
+       <div style="line-height:25%;">
+        <br>
+      </div>
+      
+      <div  align='center'>
+          <button id="ScanDevices">Scan Devices</button>
+          </div>
+          
+          <br>
+          
+          <h3>Experiment</h3>
+          
+     
+          <button id="ExperimentRunningIndicator" class="btn btn-danger" disabled> &nbsp &nbsp &nbsp  &nbsp &nbsp &nbsp  &nbsp &nbsp &nbsp </button><br style="line-height: 40px" />
+     
+    <button id="ExperimentStart">Start</button>
+    <button id="ExperimentStop">Stop</button>
+    <button id="ExperimentReset">Reset</button><br style="line-height: 30px" />
+    
+    
+     
+      
+           Experiment Start Time: <br>
+    <div style="display: inline" id="StartTime">0</div>
+    
+    
+      
+      <br>
+      
+      <h3>OD Regulation</h3> 
+       <div style="line-height:25%;">
+        <br>
+      </div>
+      <button id="ODRegulate">Switch</button> <button id="Zigzag">Dither OD</button>
+
+    
+       <div id="ODContainer"  class="container">
+        <div class="row">
+            <div class="col-3 align-self-center">
+             <b><font color="000000"> OD: </font></b> <br>
+             <button id="ODMeasure">Measure</button>
+           
+          </div>
+          <div class="col-2 align-self-center">
+              Current: <br>
+              <div id="ODCurrent">0</div>
+            
+          </div>
+           <div class="col-2 align-self-center">
+              Target: <br>
+              <div id="ODTarget">0</div>
+            
+          </div>
+         
+          <div class="col-3 align-self-center">
+              New: <br>
+              <input id="ODInput" type="number" size="8" value=0 style="width: 6em"/>
+      
+          </div>
+          <div class="col-2 align-self-end">
+              <button id="ODSet">Set</button> 
+        
+          </div>
+      
+      </div>
+      </div>
+      
+      
+      <div id="OD0Container"  class="container">
+        <div class="row">
+            <div class="col-3 align-self-center">
+             <b><font color="000000"> OD Zero: </font></b> <br> 
+             Raw: <div id="ODRaw" style="display: inline">0</div>
+             
+           
+          </div>
+          <div class="col-2 align-self-center">
+              Current: <br>
+              <div id="OD0Current">0</div>
+            
+          </div>
+          <div class="col-2 align-self-center">
+            Actual: <br>
+             <input id="OD0Actual" type="number" size="8" value=0 style="width: 4em"/>
+            
+          </div>
+           
+         
+          <div class="col-3 align-self-center">
+              Measured:<br>
+              <input id="OD0Input" type="number" size="8" value=0 style="width: 6em"/>
+      
+          </div>
+          <div class="col-2 align-self-end">
+              <button id="OD0Set">Set</button> 
+        
+          </div>
+      
+      </div>
+      </div>
+      
+      <div id="VolumeContainer"  class="container">
+        <div class="row">
+            <div class="col-3 align-self-center">
+             <b><font color="000000"> Volume (ml): </font></b> <br>
+             
+           
+          </div>
+          <div class="col-2 align-self-center">
+              Current: <br>
+              <div id="VolumeCurrent">0</div>
+            
+          </div>
+          <div class="col-2 align-self-center">
+           
+            
+          </div>
+           
+         
+          <div class="col-3 align-self-center">
+              New: <br>
+              <input id="VolumeInput" type="number" size="8" value=0 style="width: 6em"/>
+      
+          </div>
+          <div class="col-2 align-self-end">
+              <button id="VolumeSet">Set</button> 
+        
+          </div>
+      
+      </div>
+      </div>
+      
+  <br>
+  
+  
+  
+  
+  
+  
+  
+  
+      
+  </div>    
+  
+  
+  
+  <div class="col-3" align='center'>
+     <h3>Light Outputs</h3>
+     
+     <!-- LED A -->
+      <div id="LEDAContainer"  class="container" style="border:2px solid #47008F">
+        <div class="row">
+            <div class="col-2 align-self-center">
+             <b><font color="47008F"> 395nm <br> LED</font></b>
+        
+          </div>
+          <div class="col-2 align-self-center">
+              Current: <br>
+              <div id="LEDACurrent">0</div>
+            
+          </div>
+          <div class="col-2 align-self-center">
+              Default: <br>
+              <div id="LEDADefault">0</div>
+            
+          </div>
+          <div class="col-2 align-self-center">
+              New: <br>
+              <input id="LEDAInput" type="number" size="5" value=0 style="width: 4em"/>
+      
+          </div>
+          <div class="col-4 align-self-center">
+              <button id="LEDASet">Set</button> <button id="LEDASwitch" >Switch</button>
+        
+          </div>
+      
+      </div>
+      </div>
+     
+      <!-- LEDB -->
+      <div id="LEDBContainer"  class="container" style="border:2px solid #0056FF">
+        <div class="row">
+            <div class="col-2 align-self-center">
+             <b><font color="0056FF"> 457nm <br> LED</font></b>
+        
+          </div>
+          <div class="col-2 align-self-center">
+              Current: <br>
+              <div id="LEDBCurrent">0</div>
+            
+          </div>
+          <div class="col-2 align-self-center">
+              Default: <br>
+              <div id="LEDBDefault">0</div>
+            
+          </div>
+          <div class="col-2 align-self-center">
+              New: <br>
+              <input id="LEDBInput" type="number" size="5" value=0 style="width: 4em"/>
+      
+          </div>
+          <div class="col-4 align-self-center">
+              <button id="LEDBSet">Set</button> <button id="LEDBSwitch" >Switch</button>
+        
+          </div>
+      
+      </div>
+      </div>
+      
+      
+       <!-- LEDC -->
+      <div id="LEDCContainer"  class="container" style="border:2px solid #00FFA5">
+        <div class="row">
+            <div class="col-2 align-self-center">
+             <b><font color="00FFA5"> 500nm <br> LED</font></b>
+        
+          </div>
+          <div class="col-2 align-self-center">
+              Current: <br>
+              <div id="LEDCCurrent">0</div>
+            
+          </div>
+          <div class="col-2 align-self-center">
+              Default: <br>
+              <div id="LEDCDefault">0</div>
+            
+          </div>
+          <div class="col-2 align-self-center">
+              New: <br>
+              <input id="LEDCInput" type="number" size="5" value=0 style="width: 4em"/>
+      
+          </div>
+          <div class="col-4 align-self-center">
+              <button id="LEDCSet">Set</button> <button id="LEDCSwitch" >Switch</button>
+        
+          </div>
+      
+      </div>
+      </div>
+      
+      
+       <!-- LEDD -->
+      <div id="LEDDContainer"  class="container" style="border:2px solid #36FF00">
+        <div class="row">
+            <div class="col-2 align-self-center">
+             <b><font color="36FF00"> 523nm <br> LED</font></b>
+        
+          </div>
+          <div class="col-2 align-self-center">
+              Current: <br>
+              <div id="LEDDCurrent">0</div>
+            
+          </div>
+          <div class="col-2 align-self-center">
+              Default: <br>
+              <div id="LEDDDefault">0</div>
+            
+          </div>
+          <div class="col-2 align-self-center">
+              New: <br>
+              <input id="LEDDInput" type="number" size="5" value=0 style="width: 4em"/>
+      
+          </div>
+          <div class="col-4 align-self-center">
+              <button id="LEDDSet">Set</button> <button id="LEDDSwitch" >Switch</button>
+        
+          </div>
+      
+      </div>
+      </div>
+      
+      
+       <!-- LEDE -->
+      <div id="LEDEContainer"  class="container" style="border:2px solid #FFC400">
+        <div class="row">
+            <div class="col-2 align-self-center">
+             <b><font color="FFC400"> 595nm <br> LED</font></b>
+        
+          </div>
+          <div class="col-2 align-self-center">
+              Current: <br>
+              <div id="LEDECurrent">0</div>
+            
+          </div>
+          <div class="col-2 align-self-center">
+              Default: <br>
+              <div id="LEDEDefault">0</div>
+            
+          </div>
+          <div class="col-2 align-self-center">
+              New: <br>
+              <input id="LEDEInput" type="number" size="5" value=0 style="width: 4em"/>
+      
+          </div>
+          <div class="col-4 align-self-center">
+              <button id="LEDESet">Set</button> <button id="LEDESwitch" >Switch</button>
+        
+          </div>
+      
+      </div>
+      </div>
+      
+      
+      
+       <!-- LEDF -->
+      <div id="LEDFContainer"  class="container" style="border:2px solid #FF5200">
+        <div class="row">
+            <div class="col-2 align-self-center">
+             <b><font color="FF5200"> 623nm <br> LED</font></b>
+        
+          </div>
+          <div class="col-2 align-self-center">
+              Current: <br>
+              <div id="LEDFCurrent">0</div>
+            
+          </div>
+          <div class="col-2 align-self-center">
+              Default: <br>
+              <div id="LEDFDefault">0</div>
+            
+          </div>
+          <div class="col-2 align-self-center">
+              New: <br>
+              <input id="LEDFInput" type="number" size="5" value=0 style="width: 4em"/>
+      
+          </div>
+          <div class="col-4 align-self-center">
+              <button id="LEDFSet">Set</button> <button id="LEDFSwitch" >Switch</button>
+        
+          </div>
+      
+      </div>
+      </div>
+      
+      
+       <!-- LEDG -->
+      <div id="LEDGContainer"  class="container" style="border:2px solid #FFFFFF">
+        <div class="row">
+            <div class="col-2 align-self-center">
+             <b><font color="000000"> 6500K <br> LED</font></b>
+        
+          </div>
+          <div class="col-2 align-self-center">
+              Current: <br>
+              <div id="LEDGCurrent">0</div>
+            
+          </div>
+          <div class="col-2 align-self-center">
+              Default: <br>
+              <div id="LEDGDefault">0</div>
+            
+          </div>
+          <div class="col-2 align-self-center">
+              New: <br>
+              <input id="LEDGInput" type="number" size="5" value=0 style="width: 4em"/>
+      
+          </div>
+          <div class="col-4 align-self-center">
+              <button id="LEDGSet">Set</button> <button id="LEDGSwitch" >Switch</button>
+        
+          </div>
+      
+      </div>
+      </div>
+      
+      
+      
+      
+      
+       <!-- LASER 1 -->
+      <div class="container" style="border:2px solid #FF0000">
+        <div class="row">
+            <div class="col-2 align-self-center">
+             <b><font color="FF0000"> 650nm <br>LASER</font></b>
+        
+          </div>
+          <div class="col-2 align-self-center">
+              Current: <br>
+              <div id="LASER650Current">0</div>
+            
+          </div>
+          <div class="col-2 align-self-center">
+              Default: <br>
+              <div id="LASER650Default">0</div>
+            
+          </div>
+          <div class="col-2 align-self-center">
+              New: <br>
+              <input id="LASER650Input" type="number" size="5" value=0 style="width: 4em"/>
+      
+          </div>
+          <div class="col-4 align-self-center">
+              <button id="LASER650Set">Set</button> <button id="LASER650Switch" >Switch</button>
+        
+          </div>
+      
+      </div>
+      </div>
+      
+      
+       <div id="UVContainer"  class="container" style="border:2px solid #a5e1ff">
+        <div class="row">
+            <div class="col-2 align-self-center">
+             <b><font color="a5e1ff"> 280nm <br>UV</font></b>
+        
+          </div>
+          <div class="col-2 align-self-center">
+              Current: <br>
+              <div id="UVCurrent">0</div>
+            
+          </div>
+          <div class="col-2 align-self-center">
+              Default: <br>
+              <div id="UVDefault">0</div>
+            
+          </div>
+          <div class="col-2 align-self-center">
+              New: <br>
+              <input id="UVInput" type="number" size="5" value=0 style="width: 4em"/>
+      
+          </div>
+          <div class="col-4 align-self-center">
+              <button id="UVSet">Set</button> <button id="UVSwitch" >Switch</button>
+        
+          </div>
+      
+      </div>
+      </div>
+      
+      
+
+  </div>
+  
+  
+  
+  <div class="col-3" align='center'>
+     <h3>Spectrometer</h3> 
+      <b>Full Spectral Measurement:</b><br>
+     <button id="GetSpectrum">Measure</button>&nbsp &nbsp Gain:
+             <select id="SpectrumGain">
+        <option value="x0">0.5x</option>         
+        <option value="x1" selected>1x</option>
+        <option value="x2">2x</option>
+        <option value="x3">4x</option>
+        <option value="x4">8x</option>
+        <option value="x5">16x</option>
+        <option value="x6">32x</option>
+        <option value="x7">64x</option>
+        <option value="x8">128x</option>
+        <option value="x9">256x</option>
+        <option value="x10">512x</option></select>
+     
+    
+     
+     <div class="container">
+       <div class="row no-gutters" align='left'>
+           <div class="col">410nm = <div id="410nmSense" style="display: inline">0</div>
+           </div>
+           <div class="col">440nm = <div id="440nmSense" style="display: inline">0</div>
+           </div>
+           <div class="col">470nm = <div id="470nmSense" style="display: inline">0</div>
+           </div>
+           <div class="w-100"></div>
+           <div class="col">510nm = <div id="510nmSense" style="display: inline">0</div>
+           </div>
+           <div class="col">550nm = <div id="550nmSense" style="display: inline">0</div>
+           </div>
+           <div class="col">583nm = <div id="583nmSense" style="display: inline">0</div>
+           </div>
+           <div class="w-100"></div>
+           <div class="col">620nm = <div id="620nmSense" style="display: inline">0</div>
+           </div>
+           <div class="col">670nm = <div id="670nmSense" style="display: inline">0</div>
+           </div>
+           <div class="col">Clear = <div id="ClearSense" style="display: inline">0</div>
+           </div>
+         </div>
+      </div>
+      
+      <br>    
+
+      
+      <div  align='center'>
+          <button id="MeasureFP">Measure Fluorescent Proteins (FPs)</button>
+          </div>
+      
+     <br>
+     
+     
+     
+      <h3>Thermometry</h3>
+      <div id="TempContainer"  class="container">
+        <div class="row">
+            <div class="col-5 align-self-center">
+             <b><font color="000000"> T (air, external): </font></b> 
+             
+           
+          </div>
+          <div class="col-3 align-self-center">
+              <button id="TempMeasure">Measure</button> <br>
+            
+          </div>
+           
+            <div class="col-4 align-self-center">
+              Current: 
+              <div id="TempCurrent">0</div>
+            
+          </div>
+     
+      
+      </div>
+      
+       <div class="row">
+            <div class="col-5 align-self-center">
+             <b><font color="000000"> T (air, internal): </font></b> 
+             
+           
+          </div>
+          <div class="col-3 align-self-center">
+              <button id="TempMeasure2">Measure</button> <br>
+            
+          </div>
+           
+            <div class="col-4 align-self-center">
+              Current: <div id="TempCurrent2">0</div>
+            
+          </div>
+     
+      
+      </div>
+      
+      
+      <div class="row">
+            <div class="col-5 align-self-center">
+             <b><font color="000000"> T (liquid): </font></b> 
+             
+           
+          </div>
+          <div class="col-3 align-self-center">
+              <button id="TempMeasure3">Measure</button> <br>
+            
+          </div>
+           
+            <div class="col-4 align-self-center">
+              Current: <div id="TempCurrent3">0</div>
+            
+          </div>
+     
+      
+      </div>
+      
+      
+        <div class="row">
+            <div class="col-3 align-self-center">
+             <b><font color="000000">Thermostat</font></b>
+        
+          </div>
+          <div class="col-2 align-self-center">
+              Target: <br>
+              <div id="ThermostatTarget">0</div>
+            
+          </div>
+         
+          <div class="col-3 align-self-center">
+              New: <br>
+              <input id="ThermostatInput" type="number" size="8" value=0 style="width: 6em"/>
+      
+          </div>
+          <div class="col-4 align-self-center">
+              <button id="ThermostatSet">Set</button> <button id="ThermostatSwitch" >Switch</button>
+        
+          </div>
+      
+      </div>
+     
+      
+      
+      </div>
+      
+  </div>
+  
+  
+  
+  
+  
+      
+      
+      
+      
+      
+      
+      
+  <div class="col-3" align='center'>
+     <h3>Stir/Pump</h3> 
+     
+     
+     <div id="Pump1Container"  class="container" style="border:2px solid #000000">
+        <div class="row">
+            <div class="col-2 align-self-center">
+             <b><font color="000000"> P1 <br>(IN)</font></b>
+        
+          </div>
+          <div class="col-2 align-self-center">
+              Current: <br>
+              <div id="Pump1Current">0</div>
+            
+          </div>
+         
+          <div class="col-3 align-self-center">
+              New Rate: <br>
+              <input id="Pump1Input" type="number" size="8" value=0 style="width: 6em"/>
+      
+          </div>
+          <div class="col-5 align-self-center">
+              <button id="Pump1Set">Set</button> <button id="Pump1Switch" >Switch</button><button id="Pump1Direction" >Direction</button>
+        
+          </div>
+      
+      </div>
+      </div>
+      
+      
+      
+     <div style="line-height:25%;">
+        <br>
+      </div>
+      
+      
+      <div id="Pump2Container"  class="container" style="border:2px solid #000000">
+        <div class="row">
+            <div class="col-2 align-self-center">
+             <b><font color="000000"> P2 <br>(OUT)</font></b>
+        
+          </div>
+          <div class="col-2 align-self-center">
+              Current: <br>
+              <div id="Pump2Current">0</div>
+            
+          </div>
+         
+          <div class="col-3 align-self-center">
+              New Rate: <br>
+              <input id="Pump2Input" type="number" size="8" value=0 style="width: 6em"/>
+      
+          </div>
+          <div class="col-5 align-self-center">
+              <button id="Pump2Set">Set</button> <button id="Pump2Switch" >Switch</button><button id="Pump2Direction" >Direction</button>
+        
+          </div>
+      
+      </div>
+      </div>
+      
+      
+      
+      
+      <div style="line-height:25%;">
+        <br>
+      </div>
+      
+      
+      
+      
+      
+       <div id="Pump3Container"  class="container" style="border:2px solid #000000">
+        <div class="row">
+            <div class="col-2 align-self-center">
+             <b><font color="000000"> P3 </font></b>
+        
+          </div>
+          <div class="col-2 align-self-center">
+              Current: <br>
+              <div id="Pump3Current">0</div>
+            
+          </div>
+         
+          <div class="col-3 align-self-center">
+              New Rate: <br>
+              <input id="Pump3Input" type="number" size="8" value=0 style="width: 6em"/>
+      
+          </div>
+          <div class="col-5 align-self-center">
+              <button id="Pump3Set">Set</button> <button id="Pump3Switch" >Switch</button><button id="Pump3Direction" >Direction</button>
+        
+          </div>
+      
+      </div>
+      </div>
+      
+      
+      
+      
+      <div style="line-height:25%;">
+        <br>
+      </div>
+      
+      
+      
+      
+      
+      
+          <div id="Pump4Container"  class="container" style="border:2px solid #000000">
+        <div class="row">
+            <div class="col-2 align-self-center">
+             <b><font color="000000"> P4 </font> </b>
+        
+          </div>
+          <div class="col-2 align-self-center">
+              Current: <br>
+              <div id="Pump4Current">0</div>
+            
+          </div>
+         
+          <div class="col-3 align-self-center">
+              New Rate: <br>
+              <input id="Pump4Input" type="number" size="8" value=0 style="width: 6em"/>
+      
+          </div>
+          <div class="col-5 align-self-center">
+              <button id="Pump4Set">Set</button> <button id="Pump4Switch" >Switch</button><button id="Pump4Direction" >Direction</button>
+        
+          </div>
+      
+      </div>
+      </div>
+      
+      
+      
+      
+      <div style="line-height:25%;">
+        <br>
+      </div>
+      
+      
+      
+      <div id="StirContainer"  class="container" style="border:2px solid #000000">
+        <div class="row">
+            <div class="col-3 align-self-center">
+             <b><font color="000000"> Stirring</font></b>
+        
+          </div>
+          <div class="col-2 align-self-center">
+              Current: <br>
+              <div id="StirCurrent">0</div>
+            
+          </div>
+         
+          <div class="col-3 align-self-center">
+              New Rate: <br>
+              <input id="StirInput" type="number" size="8" value=0 style="width: 6em"/>
+      
+          </div>
+          <div class="col-4 align-self-center">
+              <button id="StirSet">Set</button> <button id="StirSwitch" >Switch</button>
+        
+          </div>
+      
+      </div>
+      </div>
+     
+     
+     <br>
+     
+     <h3>Optogenetics</h3>
+      <div id="LightContainer"  class="container" style="border:0px solid #000000">
+        <div class="row">
+            <div class="col-3 align-self-center">
+             <b><font color="000000"> Light</font></b><br>
+        <select id="LightExcite1">
+                       <option value="LEDA">395/30</option>
+                       <option value="LEDB">457/35</option>
+                       <option value="LEDC">500/55</option>
+                       <option value="LEDD">523/70</option>
+                       <option value="LEDE">595/25</option>
+                       <option value="LEDF">623/30</option>
+                       <option value="LEDG">6500K</option>
+             </select>
+          </div>
+          <div class="col-2 align-self-center">
+              Current: <br>
+              <div id="LightCurrent">0</div>
+            
+          </div>
+         
+          <div class="col-3 align-self-center">
+              New: <br>
+              <input id="LightInput" type="number" size="8" value=0 style="width: 6em"/> 
+               
+          </div>
+          <div class="col-4 align-self-center">
+              <button id="LightSwitch" >Switch</button>
+        
+          </div>
+      
+      </div>
+      </div>
+      
+      <h3>Custom Program</h3>
+      <div id="CustomContainer"  class="container" style="border:0px solid #000000">
+        <div class="row">
+            <div class="col-3 align-self-center">
+             <b><font color="000000"> Program</font></b><br>
+        <select id="CustomProgram1">
+                       <option value="C1">C1</option>
+                       <option value="C2">C2</option>
+                       <option value="C3">C3</option>
+                       <option value="C4">C4</option>
+                       <option value="C5">C5</option>
+                       <option value="C6">C6</option>
+                       <option value="C7">C7</option>
+                       <option value="C8">C8</option>
+             </select>
+          </div>
+          <div class="col-2 align-self-center">
+              Status: <br>
+              <div id="CustomStatus">0</div>
+            
+          </div>
+         
+          <div class="col-3 align-self-center">
+              New: <br>
+              <input id="CustomInput" type="number" size="8" value=0 style="width: 6em"/> 
+               
+          </div>
+          <div class="col-4 align-self-center">
+               <button id="CustomSwitch" >Switch</button>
+        
+          </div>
+      
+      </div>
+      </div>
+      
+      
+      
+     
+  </div>
+</div>
+
+
+ 
+<hr>
+
+<!-- Graphs go here -->
+<div hidden id="GraphReplot" value=0></div>
+
+
+  <div class="row">
+    <div class="col-4">
+      <div align='center'><h3>OD</h3> </div>  
+
+    
+    <div id="chart_div1"></div>
+
+
+    </div>
+    <div class="col-4">
+      <div align='center'><h3>Thermometry</h3> </div>
+
+    
+    <div id="chart_div2"></div>
+
+      
+    </div>
+    <div class="col-4">
+      <div align='center'><h3>Pumping</h3> </div>
+
+    
+    <div id="chart_div3"></div>
+
+
+      
+    </div>
+  </div>
+
+  <hr> 
+   
+   <div class="row">
+    <div class="col-4">
+
+
+
+<div hidden id="FPRefresh"></div>
+<div align='center'><h3>FP 1</h3><button id="FP1Switch" >Active</button> </div>
+        <br>
+         <div id="Control1"  class="container">
+        <div class="row">
+            <div class="col-1 align-self-center"></div>
+            <div class="col-2 align-self-center">
+             Excite: <br>
+             <select id="FPExcite1">
+        
+        <option value="LEDA">395/30</option>
+        <option value="LEDB">457/35</option>
+        <option value="LEDC">500/55</option>
+        <option value="LEDD">523/70</option>
+        <option value="LEDE">595/25</option>
+        <option value="LEDF">623/30</option>
+        <option value="LEDG">6500K</option>
+        </select> <br>
+        Current: 
+           
+          </div>
+          
+          <div class="col-2 align-self-center">
+             Baseband: <br>
+             <select id="FPBase1">
+        <option value="CLEAR">Clear</option>         
+        <option value="nm410">410/29</option>
+        <option value="nm440">440/33</option>
+        <option value="nm470">470/36</option>
+        <option value="nm510">510/40</option>
+        <option value="nm550">550/42</option>
+        <option value="nm583">583/44</option>
+        <option value="nm620">620/53</option>
+        <option value="nm670">670/60</option>
+        <option value="NIR">945/70</option>
+        </select> <br>
+        
+        <div id="FPBase1Value" style="display: inline">0</div>
+           
+          </div>
+          
+          <div class="col-2 align-self-center">
+             Emit 1: <br>
+             <select id="FPEmit1A">
+        <option value="CLEAR">Clear</option>         
+        <option value="nm410">410/29</option>
+        <option value="nm440">440/33</option>
+        <option value="nm470">470/36</option>
+        <option value="nm510">510/40</option>
+        <option value="nm550">550/42</option>
+        <option value="nm583">583/44</option>
+        <option value="nm620">620/53</option>
+        <option value="nm670">670/60</option>
+        <option value="NIR">945/70</option>
+        </select><br>
+        
+        <div id="FPEmit1AValue" style="display: inline">0</div>
+           
+          </div>
+          
+          <div class="col-2 align-self-center">
+             Emit 2: <br>
+             <select id="FPEmit1B">
+        <option value="OFF">OFF</option>
+        <option value="CLEAR">Clear</option>         
+        <option value="nm410">410/29</option>
+        <option value="nm440">440/33</option>
+        <option value="nm470">470/36</option>
+        <option value="nm510">510/40</option>
+        <option value="nm550">550/42</option>
+        <option value="nm583">583/44</option>
+        <option value="nm620">620/53</option>
+        <option value="nm670">670/60</option>
+        <option value="NIR">945/70</option>
+        </select><br>
+        
+        <div id="FPEmit1BValue" style="display: inline">0</div>
+           
+          </div>
+           <div class="col-2 align-self-center">
+             Gain: <br>
+             <select id="FPGain1">
+        <option value="x0">0.5x</option>         
+        <option value="x1">1x</option>
+        <option value="x2">2x</option>
+        <option value="x3">4x</option>
+        <option value="x4">8x</option>
+        <option value="x5">16x</option>
+        <option value="x6">32x</option>
+        <option value="x7">64x</option>
+        <option value="x8">128x</option>
+        <option value="x9">256x</option>
+        <option value="x10">512x</option>
+        </select><br>
+        &nbsp
+        
+           
+          </div>
+      
+      </div>
+      </div>
+      
+      
+      
+      
+      <div id="chart_div4"></div>
+
+    
+    </div>
+    <div class="col-4">
+     
+     
+     
+     <div align='center'><h3>FP 2</h3>  <button id="FP2Switch" >Active</button> </div>
+        <br>
+         <div id="Control2"  class="container">
+        <div class="row">
+            <div class="col-1 align-self-center"></div>
+            <div class="col-2 align-self-center">
+             Excite: <br>
+             <select id="FPExcite2">
+      
+        <option value="LEDA">395/30</option>
+        <option value="LEDB">457/35</option>
+        <option value="LEDC">500/55</option>
+        <option value="LEDD">523/70</option>
+        <option value="LEDE">595/25</option>
+        <option value="LEDF">623/30</option>
+        <option value="LEDG">6500K</option>
+        </select><br>
+        Current: 
+           
+          </div>
+          
+          <div class="col-2 align-self-center">
+             Baseband: <br>
+             <select id="FPBase2">
+        <option value="CLEAR">Clear</option>         
+        <option value="nm410">410/29</option>
+        <option value="nm440">440/33</option>
+        <option value="nm470">470/36</option>
+        <option value="nm510">510/40</option>
+        <option value="nm550">550/42</option>
+        <option value="nm583">583/44</option>
+        <option value="nm620">620/53</option>
+        <option value="nm670">670/60</option>
+        <option value="NIR">945/70</option>
+        </select><br>
+        
+        <div id="FPBase2Value" style="display: inline">0</div>
+           
+          </div>
+          
+          <div class="col-2 align-self-center">
+             Emit 1: <br>
+             <select id="FPEmit2A">
+        <option value="CLEAR">Clear</option>         
+        <option value="nm410">410/29</option>
+        <option value="nm440">440/33</option>
+        <option value="nm470">470/36</option>
+        <option value="nm510">510/40</option>
+        <option value="nm550">550/42</option>
+        <option value="nm583">583/44</option>
+        <option value="nm620">620/53</option>
+        <option value="nm670">670/60</option>
+        <option value="NIR">945/70</option>
+        </select><br>
+        
+        <div id="FPEmit2AValue" style="display: inline">0</div>
+           
+          </div>
+          
+          <div class="col-2 align-self-center">
+             Emit 2: <br>
+             <select id="FPEmit2B">
+        <option value="OFF">OFF</option>
+        <option value="CLEAR">Clear</option>         
+        <option value="nm410">410/29</option>
+        <option value="nm440">440/33</option>
+        <option value="nm470">470/36</option>
+        <option value="nm510">510/40</option>
+        <option value="nm550">550/42</option>
+        <option value="nm583">583/44</option>
+        <option value="nm620">620/53</option>
+        <option value="nm670">670/60</option>
+        <option value="NIR">945/70</option>
+        </select><br>
+        
+        <div id="FPEmit2BValue" style="display: inline">0</div>
+           
+          </div>
+          
+          
+          <div class="col-2 align-self-center">
+             Gain: <br>
+             <select id="FPGain2">
+        <option value="x0">0.5x</option>         
+        <option value="x1">1x</option>
+        <option value="x2">2x</option>
+        <option value="x3">4x</option>
+        <option value="x4">8x</option>
+        <option value="x5">16x</option>
+        <option value="x6">32x</option>
+        <option value="x7">64x</option>
+        <option value="x8">128x</option>
+        <option value="x9">256x</option>
+        <option value="x10">512x</option>
+        </select><br>
+        &nbsp
+        
+           
+          </div>
+          
+          
+          
+         
+      
+      </div>
+      </div>
+      
+      
+      
+    
+      <div id="chart_div5"></div>
+
+     
+    </div>
+    
+    <div class="col-4">
+        
+        
+        <div align='center'><h3>FP 3</h3> <button id="FP3Switch" >Active</button> </div>
+        <br>
+         <div id="Control3"  class="container">
+        <div class="row">
+            <div class="col-1 align-self-center"></div>
+            <div class="col-2 align-self-center">
+             Excite: <br>
+             <select id="FPExcite3">
+        
+        <option value="LEDA">395/30</option>
+        <option value="LEDB">457/35</option>
+        <option value="LEDC">500/55</option>
+        <option value="LEDD">523/70</option>
+        <option value="LEDE">595/25</option>
+        <option value="LEDF">623/30</option>
+        <option value="LEDG">6500K</option>
+        </select><br>
+        Current: 
+           
+          </div>
+          
+          <div class="col-2 align-self-center">
+             Baseband: <br>
+             <select id="FPBase3">
+        <option value="CLEAR">Clear</option>         
+        <option value="nm410">410/29</option>
+        <option value="nm440">440/33</option>
+        <option value="nm470">470/36</option>
+        <option value="nm510">510/40</option>
+        <option value="nm550">550/42</option>
+        <option value="nm583">583/44</option>
+        <option value="nm620">620/53</option>
+        <option value="nm670">670/60</option>
+        <option value="NIR">945/70</option>
+        </select><br>
+        
+        <div id="FPBase3Value" style="display: inline">0</div>
+           
+          </div>
+          
+          <div class="col-2 align-self-center">
+             Emit 1: <br>
+             <select id="FPEmit3A">
+        <option value="CLEAR">Clear</option>         
+        <option value="nm410">410/29</option>
+        <option value="nm440">440/33</option>
+        <option value="nm470">470/36</option>
+        <option value="nm510">510/40</option>
+        <option value="nm550">550/42</option>
+        <option value="nm583">583/44</option>
+        <option value="nm620">620/53</option>
+        <option value="nm670">670/60</option>
+        <option value="NIR">945/70</option>
+        </select><br>
+        
+        <div id="FPEmit3AValue" style="display: inline">0</div>
+           
+          </div>
+          
+          <div class="col-2 align-self-center">
+             Emit 2: <br>
+             <select id="FPEmit3B">
+        <option value="OFF">OFF</option>
+        <option value="CLEAR">Clear</option>         
+        <option value="nm410">410/29</option>
+        <option value="nm440">440/33</option>
+        <option value="nm470">470/36</option>
+        <option value="nm510">510/40</option>
+        <option value="nm550">550/42</option>
+        <option value="nm583">583/44</option>
+        <option value="nm620">620/53</option>
+        <option value="nm670">670/60</option>
+        <option value="NIR">945/70</option>
+        </select><br>
+        
+        <div id="FPEmit3BValue" style="display: inline">0</div>
+           
+          </div>
+           <div class="col-2 align-self-center">
+             Gain: <br>
+             <select id="FPGain3">
+        <option value="x0">0.5x</option>         
+        <option value="x1">1x</option>
+        <option value="x2">2x</option>
+        <option value="x3">4x</option>
+        <option value="x4">8x</option>
+        <option value="x5">16x</option>
+        <option value="x6">32x</option>
+        <option value="x7">64x</option>
+        <option value="x8">128x</option>
+        <option value="x9">256x</option>
+        <option value="x10">512x</option>
+        </select><br>
+         &nbsp
+        
+           
+          </div>
+      
+      </div>
+      </div>
+      
+      
+      
+        
+        
+        
+        
+        
+        
+     
+      <div id="chart_div6"></div>
+
+    
+     
+    </div>
+    
+  
+  </div>
+  
+  <hr>
+<br>
+
+
+
+
+
+
+
+<!–– This section deals with the terminal, to send something to the terminal assign its value to TerminalText then run addTerminal() -->
+
+<center>
+
+<b>Status Terminal - </b> 
+    <button id="ClearTerminal">Clear Terminal</button><br><br>
+      <script>
+        $(function() {
+            $('#ClearTerminal').click(function(){
+             
+               $.ajax({
+                   type:'POST',
+                url: '/ClearTerminal/0',
+                 success:function(response){ 
+                     getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+    
+<div id="termI" style="height:500px;width:90%;text-align:left;background-color:black;color:white;border:1px solid #ccc;font:16px/26px Georgia, Garamond, Serif;overflow:auto;">
+    
+
+
+
+</div>
+<button id="CharacteriseDevice">Characterise</button>
+
+<select id="CHProgram">
+                       <option value="C1">C1</option>
+                       <option value="C2">C2</option>
+                       <option value="C3">C3</option>
+                       <option value="C4">C4</option>
+                       <option value="C5">C5</option>
+                       <option value="C6">C6</option>
+                       <option value="C7">C7</option>
+                       <option value="C8">C8</option>
+					   <option value="C9">C9</option>
+					   <option value="C10">C10</option>
+</select>
+</center>
+
+
+
+
+<br><br>
+
+
+
+
+
+
+
+
+
+<!-- Button Scripts go below-->
+ <script>
+        $(function() {
+            $('#ExperimentStart').click(function(){
+              
+               $.ajax({
+                type:'POST',
+                url: '/Experiment/1/0',
+                 success:function(response){ 
+                     getSysData();
+                 }
+            }); 
+       
+            })
+        });
+    </script>
+    
+      <script>
+        $(function() {
+            $('#ExperimentStop').click(function(){
+             
+               $.ajax({
+                   type:'POST',
+                url: '/Experiment/0/0',
+                 success:function(response){ 
+                     getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+     <script>
+        $(function() {
+            $('#ExperimentReset').click(function(){
+             
+               $.ajax({
+                   type:'POST',
+                url: '/ExperimentReset',
+                 success:function(response){ 
+                     getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+    
+    
+    
+    
+    <script>
+        $(function() {
+            $('#ODRegulate').click(function(){
+               
+               var targetURL = '/SetOutputOn/OD/2/0';
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+    <script>
+        $(function() {
+            $('#Zigzag').click(function(){
+               
+               var targetURL = '/SetOutputOn/Zigzag/2/0';
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+    
+    
+    
+    
+    
+    <script>
+        $(function() {
+            $('#LEDASet').click(function(){
+              var value = $('#LEDAInput').val();
+              var targetURL = '/SetOutputTarget/LEDA/0/' + value;
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+      <script>
+        $(function() {
+            $('#LEDASwitch').click(function(){
+               
+               var targetURL = '/SetOutputOn/LEDA/2/0';
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+
+
+    <script>
+        $(function() {
+            $('#LEDBSet').click(function(){
+              var value = $('#LEDBInput').val();
+              var targetURL = '/SetOutputTarget/LEDB/0/' + value;
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+      <script>
+        $(function() {
+            $('#LEDBSwitch').click(function(){
+               
+               var targetURL = '/SetOutputOn/LEDB/2/0';
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+    
+ 
+    <script>
+        $(function() {
+            $('#LEDCSet').click(function(){
+              var value = $('#LEDCInput').val();
+              var targetURL = '/SetOutputTarget/LEDC/0/' + value;
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+      <script>
+        $(function() {
+            $('#LEDCSwitch').click(function(){
+               
+               var targetURL = '/SetOutputOn/LEDC/2/0';
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>   
+    
+    
+    
+    <script>
+        $(function() {
+            $('#LEDDSet').click(function(){
+              var value = $('#LEDDInput').val();
+              var targetURL = '/SetOutputTarget/LEDD/0/' + value;
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+      <script>
+        $(function() {
+            $('#LEDDSwitch').click(function(){
+               
+               var targetURL = '/SetOutputOn/LEDD/2/0';
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+    
+    
+    <script>
+        $(function() {
+            $('#LEDESet').click(function(){
+              var value = $('#LEDEInput').val();
+              var targetURL = '/SetOutputTarget/LEDE/0/' + value;
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+      <script>
+        $(function() {
+            $('#LEDESwitch').click(function(){
+               
+               var targetURL = '/SetOutputOn/LEDE/2/0';
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+    
+    
+    <script>
+        $(function() {
+            $('#LEDFSet').click(function(){
+              var value = $('#LEDFInput').val();
+              var targetURL = '/SetOutputTarget/LEDF/0/' + value;
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+      <script>
+        $(function() {
+            $('#LEDFSwitch').click(function(){
+               
+               var targetURL = '/SetOutputOn/LEDF/2/0';
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+    
+    
+    <script>
+        $(function() {
+            $('#LEDGSet').click(function(){
+              var value = $('#LEDGInput').val();
+              var targetURL = '/SetOutputTarget/LEDG/0/' + value;
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+      <script>
+        $(function() {
+            $('#LEDGSwitch').click(function(){
+               
+               var targetURL = '/SetOutputOn/LEDG/2/0';
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+
+
+
+
+    <script>
+        $(function() {
+            $('#UVSet').click(function(){
+              var value = $('#UVInput').val();
+              var targetURL = '/SetOutputTarget/UV/0/' + value;
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+      <script>
+        $(function() {
+            $('#UVSwitch').click(function(){
+               
+               var targetURL = '/SetOutputOn/UV/2/0';
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+    
+    
+    
+    
+    
+    
+      <script>
+        $(function() {
+            $('#LASER650Set').click(function(){
+              var value = $('#LASER650Input').val();
+              var targetURL = '/SetOutputTarget/LASER650/0/' + value;
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+    
+     <script>
+        $(function() {
+            $('#LASER650Switch').click(function(){
+               
+               var targetURL = '/SetOutputOn/LASER650/2/0';
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+    
+    
+     <script>
+        $(function() {
+            $('#GetSpectrum').click(function(){
+              var value = $('#SpectrumGain').val();
+              var targetURL = '/GetSpectrum/' + value + '/0';
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+
+    
+              <script>
+        $(function() {
+            $('#ODSet').click(function(){
+              var value = $('#ODInput').val();
+              var targetURL = '/SetOutputTarget/OD/0/' + value;
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+    
+      <script>
+        $(function() {
+            $('#OD0Set').click(function(){
+              var value = $('#OD0Input').val();
+              var value2 = $('#OD0Actual').val();
+              var targetURL = '/CalibrateOD/OD0/0/' + value + '/' + value2;
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+      <script>
+        $(function() {
+            $('#VolumeSet').click(function(){
+              var value = $('#VolumeInput').val();
+              var targetURL = '/SetOutputTarget/Volume/0/' + value;
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+    
+     <script>
+        $(function() {
+            $('#ODMeasure').click(function(){
+              
+              var targetURL = '/MeasureOD/0';
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+    
+    
+      
+      
+    
+     <script>
+        $(function() {
+            $('#TempMeasure').click(function(){
+              
+              var targetURL = '/MeasureTemp/External/0';
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+
+      
+    
+     <script>
+        $(function() {
+            $('#TempMeasure2').click(function(){
+              
+              var targetURL = '/MeasureTemp/Internal/0';
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+
+
+      
+    
+     <script>
+        $(function() {
+            $('#TempMeasure3').click(function(){
+              
+              var targetURL = '/MeasureTemp/IR/0';
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+
+
+
+
+
+
+
+
+    <script>
+        $(function() {
+            $('#ThermostatSet').click(function(){
+              var value = $('#ThermostatInput').val();
+              var targetURL = '/SetOutputTarget/Thermostat/0/' + value;
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+      <script>
+        $(function() {
+            $('#ThermostatSwitch').click(function(){
+               
+               var targetURL = '/SetOutputOn/Thermostat/2/0';
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+    
+    
+    
+    
+
+
+
+     <script>
+        $(function() {
+            $('#Pump1Set').click(function(){
+              var value = $('#Pump1Input').val();
+              var targetURL = '/SetOutputTarget/Pump1/0/' + value;
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+      <script>
+        $(function() {
+            $('#Pump1Switch').click(function(){
+               
+               var targetURL = '/SetOutputOn/Pump1/2/0';
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    <script>
+        $(function() {
+            $('#Pump1Direction').click(function(){
+               
+               var targetURL = '/Direction/Pump1/0';
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+         <script>
+        $(function() {
+            $('#Pump2Set').click(function(){
+              var value = $('#Pump2Input').val();
+              var targetURL = '/SetOutputTarget/Pump2/0/' + value;
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+      <script>
+        $(function() {
+            $('#Pump2Switch').click(function(){
+               
+               var targetURL = '/SetOutputOn/Pump2/2/0';
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+    <script>
+        $(function() {
+            $('#Pump2Direction').click(function(){
+               
+               var targetURL = '/Direction/Pump2/0';
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+     <script>
+        $(function() {
+            $('#Pump3Set').click(function(){
+              var value = $('#Pump3Input').val();
+              var targetURL = '/SetOutputTarget/Pump3/0/' + value;
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+      <script>
+        $(function() {
+            $('#Pump3Switch').click(function(){
+               
+               var targetURL = '/SetOutputOn/Pump3/2/0';
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+    <script>
+        $(function() {
+            $('#Pump3Direction').click(function(){
+               
+               var targetURL = '/Direction/Pump3/0';
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+    
+    
+     <script>
+        $(function() {
+            $('#Pump4Set').click(function(){
+              var value = $('#Pump4Input').val();
+              var targetURL = '/SetOutputTarget/Pump4/0/' + value;
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+      <script>
+        $(function() {
+            $('#Pump4Switch').click(function(){
+               
+               var targetURL = '/SetOutputOn/Pump4/2/0';
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+    <script>
+        $(function() {
+            $('#Pump4Direction').click(function(){
+               
+               var targetURL = '/Direction/Pump4/0';
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+    
+    
+    
+    
+    
+      <script>
+        $(function() {
+            $('#StirSet').click(function(){
+              var value = $('#StirInput').val();
+              var targetURL = '/SetOutputTarget/Stir/0/' + value;
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+      <script>
+        $(function() {
+            $('#StirSwitch').click(function(){
+               
+               var targetURL = '/SetOutputOn/Stir/2/0';
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+    
+    
+    
+    
+    
+    <!-- Set Light Actuation Measurements  --> 
+      <script>
+        $(function() {
+            $('#LightSwitch').click(function(){
+               var v1 = $('#LightExcite1').val();
+
+               var targetURL = '/SetLightActuation/' + v1;
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+    
+    
+        
+    <!-- Set Custom Program Measurements  --> 
+      <script>
+        $(function() {
+            $('#CustomSwitch').click(function(){
+               var v1 = $('#CustomProgram1').val();
+               var v2 = $('#CustomInput').val();
+               var targetURL = '/SetCustom/' + v1 + '/' + v2;
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+    
+    
+    
+    
+    
+    
+<!-- SetFP1 Measurements  --> 
+    
+    <script>
+        $(function() {
+            $('#FP1Switch').click(function(){
+              var v1 = $('#FPExcite1').val();
+              var v2 = $('#FPBase1').val();
+              var v3 = $('#FPEmit1A').val();
+              var v4 = $('#FPEmit1B').val();
+              var v5 = $('#FPGain1').val();
+              var targetURL = '/SetFPMeasurement/FP1/' + v1 + '/'+ v2 + '/'+ v3 + '/'+ v4 + '/'+ v5 ;
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+    
+    
+    <script>
+        $(function() {
+            $('#FP2Switch').click(function(){
+              var v1 = $('#FPExcite2').val();
+              var v2 = $('#FPBase2').val();
+              var v3 = $('#FPEmit2A').val();
+              var v4 = $('#FPEmit2B').val();
+              var v5 = $('#FPGain2').val();
+              var targetURL = '/SetFPMeasurement/FP2/' + v1 + '/'+ v2 + '/'+ v3 + '/'+ v4 + '/'+ v5;
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+    <script>
+        $(function() {
+            $('#FP3Switch').click(function(){
+              var v1 = $('#FPExcite3').val();
+              var v2 = $('#FPBase3').val();
+              var v3 = $('#FPEmit3A').val();
+              var v4 = $('#FPEmit3B').val();
+              var v5 = $('#FPGain3').val();
+              var targetURL = '/SetFPMeasurement/FP3/' + v1 + '/'+ v2 + '/'+ v3 + '/'+ v4 + '/'+ v5;
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+    
+    
+     <script>
+        $(function() {
+            $('#MeasureFP').click(function(){
+              
+              var targetURL = '/MeasureFP/0';
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+    
+    
+     <script>
+        $(function() {
+            $('#Device0').click(function(){
+              var targetURL = '/changeDevice/M0';
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+    
+    
+    <script>
+        $(function() {
+            $('#Device1').click(function(){
+              var targetURL = '/changeDevice/M1';
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+    <script>
+        $(function() {
+            $('#Device2').click(function(){
+              var targetURL = '/changeDevice/M2';
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    <script>
+        $(function() {
+            $('#Device3').click(function(){
+              var targetURL = '/changeDevice/M3';
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    <script>
+        $(function() {
+            $('#Device4').click(function(){
+              var targetURL = '/changeDevice/M4';
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    <script>
+        $(function() {
+            $('#Device5').click(function(){
+              var targetURL = '/changeDevice/M5';
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    <script>
+        $(function() {
+            $('#Device6').click(function(){
+              var targetURL = '/changeDevice/M6';
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    <script>
+        $(function() {
+            $('#Device7').click(function(){
+              var targetURL = '/changeDevice/M7';
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+    
+     <script>
+        $(function() {
+            $('#ScanDevices').click(function(){
+              var targetURL = '/scanDevices/all';
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+    
+    
+       <script>
+        $(function() {
+            $('#CharacteriseDevice').click(function(){
+              var v1 = $('#CHProgram').val();
+              var targetURL = '/CharacteriseDevice/0/'+ v1;
+               $.ajax({
+                   type:'POST',
+                   url: targetURL,
+                   success:function(response){ 
+                   getSysData();
+                 }
+             }); 
+             })
+        });
+    </script>
+    
+   
+     
+    
+    
+    
+    
+    
+<!-- Bootstrap Imports  --> 
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+
+
+<!-- Graphing Business -->
+
+
+
+<script>
+
+
+
+
+
+
+
+google.charts.load('visualization', '1', {packages:['controls'],});
+</script>
+
+
+</body>
+</html>
