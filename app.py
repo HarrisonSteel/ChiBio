@@ -55,24 +55,34 @@ sysData = {'M0' : {
    'ThermometerInternal' : {'current' : 0.0,'record' : []},
    'ThermometerExternal' : {'current' : 0.0,'record' : []},
    'ThermometerIR' : {'current' : 0.0,'record' : []},
-   'OD' :  {'current' : 0.0,'target' : 0.5,'default' : 0.5,'max': 10, 'min' : 0,'record' : [],'targetrecord' : [],'Measuring' : 0, 'ON' : 0,'Integral' : 0.0,'Integral2' : 0.0},
-   'OD0' : {'target' : 0.0,'raw' : 0.0,'max' : 100000.0,'min': 0.0,'CFa' : 0.9466 ,'CFb' : 0.4685 },
-   'Zigzag': {'ON' : 0, 'Zig' : 0.05,'target' : 0.0},
-   'Volume' : {'target' : 20.0,'max' : 25.0, 'min' : 0.0},
+   'OD' :  {'current' : 0.0,'target' : 0.5,'default' : 0.5,'max': 10, 'min' : 0,'record' : [],'targetrecord' : [],'Measuring' : 0, 'ON' : 0,'Integral' : 0.0,'Integral2' : 0.0,'device' : 'LASER650'},
+   'OD0' : {'target' : 0.0,'raw' : 0.0,'max' : 100000.0,'min': 0.0,'LASERb' : 1.833 ,'LASERa' : 0.226, 'LEDFa' : 0.673, 'LEDAa' : 7.0  },
+   'Chemostat' : {'ON' : 0, 'p1' : 0.0, 'p2' : 0.1},
+   'Zigzag': {'ON' : 0, 'Zig' : 0.04,'target' : 0.0,'SwitchPoint' : 0},
+   'GrowthRate': {'current' : 0.0,'record' : [],'default' : 2.0},
+   'Volume' : {'target' : 20.0,'max' : 50.0, 'min' : 0.0,'ON' : 0},
    'Pump1' :  {'target' : 0.0,'default' : 0.0,'max': 1.0, 'min' : -1.0, 'direction' : 1.0, 'ON' : 0,'record' : [], 'thread' : 0},
    'Pump2' :  {'target' : 0.0,'default' : 0.0,'max': 1.0, 'min' : -1.0, 'direction' : 1.0, 'ON' : 0,'record' : [], 'thread' : 0},
    'Pump3' :  {'target' : 0.0,'default' : 0.0,'max': 1.0, 'min' : -1.0, 'direction' : 1.0, 'ON' : 0,'record' : [], 'thread' : 0},
    'Pump4' :  {'target' : 0.0,'default' : 0.0,'max': 1.0, 'min' : -1.0, 'direction' : 1.0, 'ON' : 0,'record' : [], 'thread' : 0},
    'Stir' :  {'target' : 0.0,'default' : 0.5,'max': 1.0, 'min' : 0.0, 'ON' : 0},
    'Light' :  {'target' : 0.0,'default' : 0.5,'max': 1.0, 'min' : 0.0, 'ON' : 0, 'Excite' : 'LEDD', 'record' : []},
-   'Custom' :  {'Status' : 0.0,'default' : 0.0,'Program': 'C1', 'ON' : 0,'green' : 0, 'red' : 0, 'Integral' : 0.0, 'record' : []},
+   'Custom' :  {'Status' : 0.0,'default' : 0.0,'Program': 'C1', 'ON' : 0,'param1' : 0, 'param2' : 0, 'param3' : 0.0, 'record' : []},
    'FP1' : {'ON' : 0 ,'LED' : 0,'BaseBand' : 0, 'Emit11Band' : 0,'Emit2Band' : 0,'Base' : 0, 'Emit11' : 0,'Emit2' : 0,'BaseRecord' : 0, 'Emit1Record' : 0,'Emit2Record' : 0 ,'Gain' : 0},
    'FP2' : {'ON' : 0 ,'LED' : 0,'BaseBand' : 0, 'Emit11Band' : 0,'Emit2Band' : 0,'Base' : 0, 'Emit11' : 0,'Emit2' : 0,'BaseRecord' : 0, 'Emit1Record' : 0,'Emit2Record' : 0 ,'Gain' : 0},
-   'FP3' : {'ON' : 0 ,'LED' : 0,'BaseBand' : 0, 'Emit11Band' : 0,'Emit2Band' : 0,'Base' : 0, 'Emit11' : 0,'Emit2' : 0,'BaseRecord' : 0, 'Emit1Record' : 0,'Emit2Record' : 0 ,'Gain' : 0}
+   'FP3' : {'ON' : 0 ,'LED' : 0,'BaseBand' : 0, 'Emit11Band' : 0,'Emit2Band' : 0,'Base' : 0, 'Emit11' : 0,'Emit2' : 0,'BaseRecord' : 0, 'Emit1Record' : 0,'Emit2Record' : 0 ,'Gain' : 0},
+   'biofilm' : {'LEDA' : {'nm410' : 0, 'nm440' : 0, 'nm470' : 0, 'nm510' : 0, 'nm550' : 0, 'nm583' : 0, 'nm620' : 0, 'nm670' : 0,'CLEAR' : 0,'NIR' : 0},
+                'LEDB' : {'nm410' : 0, 'nm440' : 0, 'nm470' : 0, 'nm510' : 0, 'nm550' : 0, 'nm583' : 0, 'nm620' : 0, 'nm670' : 0,'CLEAR' : 0,'NIR' : 0},
+                'LEDC' : {'nm410' : 0, 'nm440' : 0, 'nm470' : 0, 'nm510' : 0, 'nm550' : 0, 'nm583' : 0, 'nm620' : 0, 'nm670' : 0,'CLEAR' : 0,'NIR' : 0},
+                'LEDD' : {'nm410' : 0, 'nm440' : 0, 'nm470' : 0, 'nm510' : 0, 'nm550' : 0, 'nm583' : 0, 'nm620' : 0, 'nm670' : 0,'CLEAR' : 0,'NIR' : 0},
+                'LEDE' : {'nm410' : 0, 'nm440' : 0, 'nm470' : 0, 'nm510' : 0, 'nm550' : 0, 'nm583' : 0, 'nm620' : 0, 'nm670' : 0,'CLEAR' : 0,'NIR' : 0},
+                'LEDF' : {'nm410' : 0, 'nm440' : 0, 'nm470' : 0, 'nm510' : 0, 'nm550' : 0, 'nm583' : 0, 'nm620' : 0, 'nm670' : 0,'CLEAR' : 0,'NIR' : 0},
+                'LEDG' : {'nm410' : 0, 'nm440' : 0, 'nm470' : 0, 'nm510' : 0, 'nm550' : 0, 'nm583' : 0, 'nm620' : 0, 'nm670' : 0,'CLEAR' : 0,'NIR' : 0},
+                'LASER650' : {'nm410' : 0, 'nm440' : 0, 'nm470' : 0, 'nm510' : 0, 'nm550' : 0, 'nm583' : 0, 'nm620' : 0, 'nm670' : 0,'CLEAR' : 0,'NIR' : 0}}
    }}
 
 
-        
+
 #SysDevices is unique to each device and is responsible for storing information required for the digital communications, and various automation funtions. These values are stored outside sysData since they are not passable into the HTML interface using the jsonify package.        
 sysDevices = {'M0' : {
     'AS7341' : {'device' : 0},
@@ -266,14 +276,19 @@ def initialise(M):
     sysData[M]['Custom']['ON']=0
     sysData[M]['Custom']['Program']='C1'
     
-    sysData[M]['Custom']['green']=0
-    sysData[M]['Custom']['red']=0
-    sysData[M]['Custom']['Integral']=0.0
+    sysData[M]['Custom']['param1']=0.0
+    sysData[M]['Custom']['param2']=0.0
+    sysData[M]['Custom']['param3']=0.0
     
     sysData[M]['OD']['current']=0.0
     sysData[M]['OD']['target']=sysData[M]['OD']['default'];
     sysData[M]['OD0']['target']=65000
     sysData[M]['OD0']['raw']=65000
+    sysData[M]['OD']['device']='LASER650'
+    #sysData[M]['OD']['device']='LEDA'
+    
+    #if (M=='M0'):
+    #    sysData[M]['OD']['device']='LEDA'
     
     
     sysData[M]['Volume']['target']=20.0
@@ -292,6 +307,8 @@ def initialise(M):
     sysData[M]['OD']['Integral2']=0.0
     sysData[M]['Zigzag']['ON']=0
     sysData[M]['Zigzag']['target']=0.0
+    sysData[M]['Zigzag']['SwitchPoint']=0
+    sysData[M]['GrowthRate']['current']=sysData[M]['GrowthRate']['default']
 
     sysDevices[M]['Thermostat']['threadCount']=0
 
@@ -320,6 +337,8 @@ def initialise(M):
     sysData[M]['ThermometerExternal']['record']=[]
     sysData[M]['ThermometerIR']['record']=[]
     sysData[M]['Thermostat']['record']=[]
+	
+    sysData[M]['GrowthRate']['record']=[]
 
     sysDevices[M]['ThermometerInternal']['device']=I2C.get_i2c_device(0x18,2) #Get Thermometer on Bus 2!!!
     sysDevices[M]['ThermometerExternal']['device']=I2C.get_i2c_device(0x1b,2) #Get Thermometer on Bus 2!!!
@@ -330,7 +349,7 @@ def initialise(M):
     sysDevices[M]['Pumps']['frequency']=0x1e #200Hz PWM frequency
     sysDevices[M]['PWM']['device']=I2C.get_i2c_device(0x60,2) #Get OD Chip on Bus 2!!!!!
     sysDevices[M]['PWM']['startup']=0
-    sysDevices[M]['PWM']['frequency']=0x14# 0x14 = 300hz, 0x03 is 1526 Hz PWM frequency for fan/LEDs, maximum possible. Potentially dial this down if you are getting audible ringing in the device! 
+    sysDevices[M]['PWM']['frequency']=0x03# 0x14 = 300hz, 0x03 is 1526 Hz PWM frequency for fan/LEDs, maximum possible. Potentially dial this down if you are getting audible ringing in the device! 
     #There is a tradeoff between large frequencies which can make capacitors in the 6V power regulation oscillate audibly, and small frequencies which result in the number of LED "ON" cycles varying during measurements.
     sysDevices[M]['ThermometerIR']['device']=smbus.SMBus(bus=2) #Set up SMBus thermometer
     sysDevices[M]['ThermometerIR']['address']=0x5a 
@@ -593,9 +612,9 @@ def SetOutput(M,item):
     #We go through each different item and set it going as appropriate.
     if(item=='Stir'): 
         #Stirring is initiated at a high speed for a couple of seconds to prevent the stir motor from stalling (e.g. if it is started at an initial power of 0.3)
-        if (sysData[M][item]['ON']==1):
+        if (sysData[M][item]['target']*float(sysData[M][item]['ON'])>0):
             setPWM(M,'PWM',sysItems[item],1.0*float(sysData[M][item]['ON']),0) # This line is to just get stirring started briefly.
-            time.sleep(1.0)
+            time.sleep(1.5)
 
             if (sysData[M][item]['target']>0.4 and sysData[M][item]['ON']==1):
                 setPWM(M,'PWM',sysItems[item],0.5*float(sysData[M][item]['ON']),0) # This line is to just get stirring started briefly.
@@ -607,7 +626,6 @@ def SetOutput(M,item):
 
         setPWM(M,'PWM',sysItems[item],sysData[M][item]['target']*float(sysData[M][item]['ON']),0)
         
-        #setPWM(M,'PWM',sysItems[item],sysData[M][item]['target']*0.0,0) #For testing
         
     elif(item=='Heat'):
         setPWM(M,'PWM',sysItems[item],sysData[M][item]['target']*float(sysData[M][item]['ON']),0)
@@ -631,6 +649,7 @@ def SetOutput(M,item):
         SetOutputOn(M,'Pump2',0) #We turn pumps off when we switch OD state
     elif (item=='Zigzag'):
         sysData[M]['Zigzag']['target']=5.0
+        sysData[M]['Zigzag']['SwitchPoint']=sysData[M]['Experiment']['cycles']
     
     elif (item=='LEDA' or item=='LEDB' or item=='LEDC' or item=='LEDD' or item=='LEDE' or item=='LEDF' or item=='LEDG'):
         setPWM(M,'PWM',sysItems[item],sysData[M][item]['target']*float(sysData[M][item]['ON']),0)
@@ -953,7 +972,7 @@ def GetSpectrum(M,Gain):
     sysData[M]['AS7341']['spectrum']['NIR']=out2[3]
     
         
-        
+    return ('', 204)   
     
 
 
@@ -1013,49 +1032,61 @@ def GetTransmission(M,item,wavelengths,Gain,ISteps):
 @application.route("/SetCustom/<Program>/<Status>",methods=['POST'])
 def SetCustom(Program,Status):
     #Turns a custom program on/off.
+	
     global sysData
     M=sysItems['UIDevice']
     item="Custom"
     if sysData[M][item]['ON']==1:
         sysData[M][item]['ON']=0
-        return ('', 204)
     else:
-        sysData[M][item]['Program']=str(Program)
-        sysData[M][item]['Status']=float(Status)
-        
-        sysData[M][item]['ON']=1
-        sysData[M][item]['Integral']=0.0
-        return('',204)
-        
+		sysData[M][item]['Program']=str(Program)
+		sysData[M][item]['Status']=float(Status)
+		sysData[M][item]['ON']=1
+		sysData[M][item]['param1']=0.0 #Thus parameters get reset each time you restart your program.
+		sysData[M][item]['param2']=0.0 
+		sysData[M][item]['param3']=0.0
+	
+    return('',204)
+		
         
 def CustomProgram(M):
     #Runs a custom program, some examples are included. You can remove/edit this function as you see fit.
     #Note that the custom programs (as set up at present) use an external .csv file with input parameters. THis is done to allow these parameters to easily be varied on the fly. 
     global sysData
     M=str(M)
-    
     program=sysData[M]['Custom']['Program']
-    integral=0.0
-    green=0.0
-    red=0.0
-    if (sysData[M]['Custom']['ON']==1):
+    #Subsequent few lines reads in external parameters from a file if you are using any.
+    fname='InputParameters_' + str(M)+'.csv'
+	
+    with open(fname, 'rb') as f:
+        reader = csv.reader(f)
+        listin = list(reader)
+    Params=listin[0]
+	
+    if (program=="C1"): #Optogenetic Integral Control Program
+        integral=0.0 #Integral in integral controller
+        green=0.0 #Intensity of Green actuation 
+        red=0.0 #Intensity of red actuation.
+        GFPNow=sysData[M]['FP1']['Emit1']
+        GFPTarget=sysData[M]['Custom']['Status'] #This is the controller setpoint.
+        error=GFPTarget-GFPNow
+        if error>0.0075:
+            green=1.0
+            red=0.0
+            sysData[M]['Custom']['param3']=0.0 
+        elif error<-0.0075:
+            green=0.0
+            red=1.0
+            sysData[M]['Custom']['param3']=0.0
+        else:
+            red=1.0
+            balance=float(Params[0]) #our guess at green light level to get 50% expression.
+            KI=float(Params[1])
+            KP=float(Params[2])
+            integral=sysData[M]['Custom']['param3']+error*KI
+            green=balance+KP*error+integral
+            sysData[M]['Custom']['param3']=integral
         
-        
-        fname='InputParameters_' + str(M)+'.csv'
-        with open(fname, 'rb') as f:
-            reader = csv.reader(f)
-            listin = list(reader)
-        Params=listin[0]
-        
-        if (program=="C1"): #Simple step-wise change in optogenetic excitation.
-            sysData[M]['Custom']['Status']=sysData[M]['Custom']['Status']+1.0 #We increment how many times we've been through this loop.
-            pt=sysData[M]['Custom']['Status']
-            sp=float(Params[3])*60.0 #Letting it have 8 hours settle period with each transition in each case.
-            stage=int(math.floor(pt/sp))
-            green_range=[0.0,0.04,0.08,0.12,0.16,0.2,0.3,0.5,0.7,0.9,0.7,0.5,0.3,0.2,0.16,0.12,0.08,0.04,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
-            green=green_range[stage]
-            red=1.0 #Basically we leave red on the whole time at this intensity and vary green
-       
 
         GreenThread=Thread(target = CustomLEDCycle, args=(M,'LEDD',green))
         GreenThread.setDaemon(True)
@@ -1063,13 +1094,56 @@ def CustomProgram(M):
         RedThread=Thread(target = CustomLEDCycle, args=(M,'LEDF',red))
         RedThread.setDaemon(True)
         RedThread.start();
-        sysData[M]['Custom']['green']=green
-        sysData[M]['Custom']['red']=red
+        sysData[M]['Custom']['param1']=green
+        sysData[M]['Custom']['param2']=red
         addTerminal(M,'Program = ' + str(program) + ' green= ' + str(green)+ ' red= ' + str(red) + ' integral= ' + str(integral))
-    else:
+	
+    elif (program=="C2"): #UV Integral Control Program
+        integral=0.0 #Integral in integral controller
+        UV=0.0 #Intensity of Green actuation 
+        GrowthRate=sysData[M]['GrowthRate']['current']
+        GrowthTarget=sysData[M]['Custom']['Status'] #This is the controller setpoint.
+        error=GrowthTarget-GrowthRate
+        KP=float(Params[0]) #Past data suggest value of ~0.005
+        KI=float(Params[1]) #Past data suggest value of ~2e-5
+        integral=sysData[M]['Custom']['param2']+error*KI
+        if(integral>0):
+            integral=0.0
+        sysData[M]['Custom']['param2']=integral
+        UV=-1.0*(KP*error+integral)
+        sysData[M]['Custom']['param1']=UV
+        SetOutputTarget(M,'UV',UV)
+        SetOutputOn(M,'UV',1)
+        addTerminal(M,'Program = ' + str(program) + ' UV= ' + str(UV)+  ' integral= ' + str(integral))
         
-        sysData[M]['Custom']['green']=green
-        sysData[M]['Custom']['red']=red
+    elif (program=="C3"): #UV Integral Control Program Mk 2
+        integral=sysData[M]['Custom']['param2'] #Integral in integral controller
+        integral2=sysData[M]['Custom']['param3'] #Second integral controller
+        UV=0.0 #Intensity of UV
+        GrowthRate=sysData[M]['GrowthRate']['current']
+        GrowthTarget=sysData[M]['Custom']['Status'] #This is the controller setpoint.
+        error=GrowthTarget-GrowthRate
+        KP=float(Params[0]) #Past data suggest value of ~0.005
+        KI=float(Params[1]) #Past data suggest value of ~2e-5
+        KI2=float(Params[2])
+        integral=sysData[M]['Custom']['param2']+error*KI
+        if(integral>0):
+            integral=0.0
+            
+        if(abs(error)<0.3): #This is a second high-gain integrator which only gets cranking along when we are close to the target.
+            integral2=sysData[M]['Custom']['param3']+error*KI2
+        if(integral2>0):
+            integral2=0.0
+            
+        sysData[M]['Custom']['param2']=integral
+        sysData[M]['Custom']['param3']=integral2
+        UV=-1.0*(KP*error+integral+integral2)
+        m=50.0
+        UV=(1.0/m)*(math.exp(m*UV)-1.0) #Basically this is to force the UV level to increase exponentially!
+        sysData[M]['Custom']['param1']=UV
+        SetOutputTarget(M,'UV',UV)
+        SetOutputOn(M,'UV',1)
+        addTerminal(M,'Program = ' + str(program) + ' UV= ' + str(UV)+  ' integral= ' + str(integral))
 
     return
 
@@ -1127,8 +1201,6 @@ def CharacteriseDevice(M,Program):
         cthread.setDaemon(True)
         cthread.start()
     
-    
-    
     return('',204)
         
         
@@ -1177,11 +1249,10 @@ def CharacteriseDevice2(M):
     simplejson.dump(result,f)
     f.close()
     return
-    
 
-    
-
-
+  
+        
+        
 
 def I2CCom(M,device,rw,hl,data1,data2,SMBUSFLAG):
     #Function used to manage I2C bus communications for ALL devices.
@@ -1204,15 +1275,10 @@ def I2CCom(M,device,rw,hl,data1,data2,SMBUSFLAG):
         tries=-1
         os._exit(4)
     
-    cID=str(M)+str(device)+'d'+str(data1)+'d'+str(data2)  # This is an ID string for the communication that we are trying to send.
-    
+    #cID=str(M)+str(device)+'d'+str(data1)+'d'+str(data2)  # This is an ID string for the communication that we are trying to send - not used at present
     #Any time a thread gets to this point it will wait until the lock is free. Then, only one thread at a time will advance. 
     lock.acquire()
-    filename=str(M)+'i2c.csv'
-    with open(filename, 'w') as csvFile: # Here we append the above row to our CSV file.
-        writer = csv.writer(csvFile)
-        writer.writerow(cID)
-    csvFile.close()
+
     
     #We now connect the multiplexer to the appropriate device to allow digital communications.
     tries=0
@@ -1239,7 +1305,7 @@ def I2CCom(M,device,rw,hl,data1,data2,SMBUSFLAG):
             if tries==5:
                 time.sleep(0.2)
                 
-        if tries>10: #If it has failed a number of times then likely something is seriously wrong, so we crash the software.
+        if tries>20: #If it has failed a number of times then likely something is seriously wrong, so we crash the software.
             sysItems['Watchdog']['ON']=0 #Basically this will crash all the electronics and the software. 
             out=0
             print('Failed to communicate to Multiplexer 10 times. Disabling hardware and software!')
@@ -1247,10 +1313,7 @@ def I2CCom(M,device,rw,hl,data1,data2,SMBUSFLAG):
             os._exit(4)
     
     
-    with open(filename, 'a') as csvFile: # Here we append the above row to our CSV file.
-        writer = csv.writer(csvFile)
-        writer.writerow('Pass multiplex')
-    csvFile.close()
+
     
     time.sleep(0.0005)
     out=0;
@@ -1300,20 +1363,14 @@ def I2CCom(M,device,rw,hl,data1,data2,SMBUSFLAG):
                 
     time.sleep(0.0005)
     
-    with open(filename, 'a') as csvFile: # Here we append the above row to our CSV file.
-        writer = csv.writer(csvFile)
-        writer.writerow('Pass cmd')
-    csvFile.close()
+
     
     try:
         sysItems['Multiplexer']['device'].write8(int(0x00),int(0x00)) #Disconnect multiplexer with each iteration. 
     except:
         print('Failed to disconnect multiplexer on device ' + str(M))
 
-    with open(filename, 'a') as csvFile: # Here we append the above row to our CSV file.
-        writer = csv.writer(csvFile)
-        writer.writerow('Fin Write')
-    csvFile.close()
+
     
     lock.release() #Bus lock is released so next command can occur.
     
@@ -1327,27 +1384,97 @@ def CalibrateOD(M,item,value,value2):
     #Used to calculate calibration value for OD measurements.
     global sysData
     item = str(item)
-    ODActual = float(value)
-    ODRaw = float(value2)
+    ODRaw = float(value)
+    ODActual = float(value2)
     M=str(M)
     if (M=="0"):
         M=sysItems['UIDevice']
-    a=sysData[M]['OD0']['CFa']#Retrieve the calibration factors for OD.
-    b=sysData[M]['OD0']['CFb'] 
-    if (ODActual<0):
-        ODActual=0
-        print("You put a negative OD into calibration! Setting it to 0")
+        
+    device=sysData[M]['OD']['device']
+    if (device=='LASER650'):
+        a=sysData[M]['OD0']['LASERa']#Retrieve the calibration factors for OD.
+        b=sysData[M]['OD0']['LASERb'] 
+        print(ODActual)
+        print(a)
+        print(b)
+        if (ODActual<0):
+            ODActual=0
+            print("You put a negative OD into calibration! Setting it to 0")
+        
+        raw=((ODActual/a +  (b/(2*a))**2)**0.5) - (b/(2*a)) #THis is performing the inverse function of the quadratic OD calibration.
+        print(raw)
+        OD0=(10.0**raw)*ODRaw
+        print(OD0)
+        if (OD0<sysData[M][item]['min']):
+            OD0=sysData[M][item]['min']
+            print('OD calibration value seems too low?!')
+
+        if (OD0>sysData[M][item]['max']):
+            OD0=sysData[M][item]['max']
+            print('OD calibration value seems too high?!')
+
     
-    raw=((ODActual/b +  (a/(2*b))**2)**0.5) - (a/(2*b)) #THis is performing the inverse function of the quadratic OD calibration.
-    OD0=(10.0**raw)*ODRaw
-
-    if (OD0<sysData[M][item]['min']):
-        OD0=sysData[M][item]['min']
-    if (OD0>sysData[M][item]['max']):
-        OD0=sysData[M][item]['max']
-
-    sysData[M][item]['target']=OD0
-    print("Calibrated OD")
+        sysData[M][item]['target']=OD0
+        print("Calibrated OD")
+    elif (device=='LEDF'):
+        a=sysData[M]['OD0']['LEDFa']#Retrieve the calibration factors for OD.
+        
+        if (ODActual<0):
+            ODActual=0
+            print("You put a negative OD into calibration! Setting it to 0")
+        if (M=='M0'):
+            CF=1299.0
+        elif (M=='M1'):
+            CF=1206.0
+        elif (M=='M2'):
+            CF=1660.0
+        elif (M=='M3'):
+            CF=1494.0
+            
+        raw=(ODActual)/a  #THis is performing the inverse function of the linear OD calibration.
+        OD0=ODRaw - raw*CF
+        OD0=ODRaw/ODActual
+        print(OD0)
+    
+        if (OD0<sysData[M][item]['min']):
+            OD0=sysData[M][item]['min']
+            print('OD calibration value seems too low?!')
+        if (OD0>sysData[M][item]['max']):
+            OD0=sysData[M][item]['max']
+            print('OD calibration value seems too high?!')
+    
+        sysData[M][item]['target']=OD0
+        print("Calibrated OD")
+    elif (device=='LEDA'):
+        a=sysData[M]['OD0']['LEDAa']#Retrieve the calibration factors for OD.
+        
+        if (ODActual<0):
+            ODActual=0
+            print("You put a negative OD into calibration! Setting it to 0")
+        if (M=='M0'):
+            CF=422
+        elif (M=='M1'):
+            CF=379
+        elif (M=='M2'):
+            CF=574
+        elif (M=='M3'):
+            CF=522
+            
+        raw=(ODActual)/a  #THis is performing the inverse function of the linear OD calibration.
+        OD0=ODRaw - raw*CF
+        OD0=ODRaw/ODActual
+        print(OD0)
+    
+        if (OD0<sysData[M][item]['min']):
+            OD0=sysData[M][item]['min']
+            print('OD calibration value seems too low?!')
+        if (OD0>sysData[M][item]['max']):
+            OD0=sysData[M][item]['max']
+            print('OD calibration value seems too high?!')
+    
+        sysData[M][item]['target']=OD0
+        print("Calibrated OD")
+        
     return ('', 204)    
     
     
@@ -1360,16 +1487,58 @@ def MeasureOD(M):
     M=str(M)
     if (M=="0"):
         M=sysItems['UIDevice']
-    out=GetTransmission(M,'LASER650',['CLEAR'],1,255)
-    sysData[M]['OD0']['raw']=out[0]
+    device=sysData[M]['OD']['device']
+    if (device=='LASER650'):
+        out=GetTransmission(M,'LASER650',['CLEAR'],1,255)
+        sysData[M]['OD0']['raw']=out[0]
     
-    a=sysData[M]['OD0']['CFa']#Retrieve the calibration factors for OD.
-    b=sysData[M]['OD0']['CFb'] 
-    try:
-        raw=math.log10(sysData[M]['OD0']['target']/out[0])
-        sysData[M]['OD']['current']=raw*a + raw*raw*b
-    except:
-        sysData[M]['OD']['current']=0;
+        a=sysData[M]['OD0']['LASERa']#Retrieve the calibration factors for OD.
+        b=sysData[M]['OD0']['LASERb'] 
+        try:
+            raw=math.log10(sysData[M]['OD0']['target']/out[0])
+            sysData[M]['OD']['current']=raw*b + raw*raw*a
+        except:
+            sysData[M]['OD']['current']=0;
+    elif (device=='LEDF'):
+        out=GetTransmission(M,'LEDF',['CLEAR'],7,255)
+
+        sysData[M]['OD0']['raw']=out[0]
+        a=sysData[M]['OD0']['LEDFa']#Retrieve the calibration factors for OD.
+        try:
+            if (M=='M0'):
+                CF=1299.0
+            elif (M=='M1'):
+                CF=1206.0
+            elif (M=='M2'):
+                CF=1660.0
+            elif (M=='M3'):
+                CF=1494.0
+            raw=out[0]/CF - sysData[M]['OD0']['target']/CF
+            raw=out[0]/sysData[M]['OD0']['target']
+            sysData[M]['OD']['current']=raw
+        except:
+            sysData[M]['OD']['current']=0;
+
+    elif (device=='LEDA'):
+        out=GetTransmission(M,'LEDA',['CLEAR'],7,255)
+
+        sysData[M]['OD0']['raw']=out[0]
+        a=sysData[M]['OD0']['LEDAa']#Retrieve the calibration factors for OD.
+        try:
+            if (M=='M0'):
+                CF=422.0
+            elif (M=='M1'):
+                CF=379.0
+            elif (M=='M2'):
+                CF=574.0
+            elif (M=='M3'):
+                CF=522.0
+            raw=out[0]/CF - sysData[M]['OD0']['target']/CF
+            raw=out[0]/sysData[M]['OD0']['target']
+            #sysData[M]['OD']['current']=raw*a
+            sysData[M]['OD']['current']=raw
+        except:
+            sysData[M]['OD']['current']=0;
     
     return ('', 204)  
     
@@ -1504,11 +1673,22 @@ def csvData(M):
         else:
             row=row+([0.0,0.0,0.0])
     
-    row=row+[sysData[M]['Custom']['green']]
-    row=row+[sysData[M]['Custom']['red']]
-    row=row+[sysData[M]['Custom']['Integral']]
-    #row=row+[sysData[M]['Custom']['status']] 
-    row=row+[sysData[M]['Zigzag']['target']*sysData[M]['Zigzag']['ON']]
+    row=row+[sysData[M]['Custom']['param1']*float(sysData[M]['Custom']['ON'])]
+    row=row+[sysData[M]['Custom']['param2']*float(sysData[M]['Custom']['ON'])]
+    row=row+[sysData[M]['Custom']['param3']*float(sysData[M]['Custom']['ON'])]
+    row=row+[sysData[M]['Custom']['Status']*float(sysData[M]['Custom']['ON'])]
+    row=row+[sysData[M]['Zigzag']['target']*float(sysData[M]['Zigzag']['ON'])]
+    row=row+[sysData[M]['GrowthRate']['current']*sysData[M]['Zigzag']['ON']]
+   
+   
+	#Following can be uncommented if you are recording ALL spectra for e.g. biofilm experiments
+    #bands=['nm410' ,'nm440','nm470','nm510','nm550','nm583','nm620','nm670','CLEAR','NIR']    
+    #items= ['LEDA','LEDB','LEDC','LEDD','LEDE','LEDF','LEDG','LASER650']
+    #for item in items:
+    #   for band in bands:
+    #       row=row+[sysData[M]['biofilm'][item][band]]
+			
+	
     filename = sysData[M]['Experiment']['startTime'] + '_' + M + '_data' + '.csv'
     
 
@@ -1545,6 +1725,7 @@ def downsample(M):
     sysData[M]['Pump2']['record']=list(np.interp(tnew,time,sysData[M]['Pump2']['record']))
     sysData[M]['Pump3']['record']=list(np.interp(tnew,time,sysData[M]['Pump3']['record']))
     sysData[M]['Pump4']['record']=list(np.interp(tnew,time,sysData[M]['Pump4']['record']))
+    sysData[M]['GrowthRate']['record']=list(np.interp(tnew,time,sysData[M]['GrowthRate']['record']))
     
         
     for FP in ['FP1','FP2','FP3']:
@@ -1628,16 +1809,17 @@ def RegulateOD(M):
     elif(Pump1<0):
         Pump1=0.0
 
+    if(sysData[M]['Chemostat']['ON']==1):
+        Pump1=float(sysData[M]['Chemostat']['p1'])
+
     #Set new Pump targets
     sysData[M]['Pump1']['target']=Pump1*Pump1Direction
-    sysData[M]['Pump2']['target']=(Pump1*4+0.04)*Pump2Direction
+    sysData[M]['Pump2']['target']=(Pump1*4+0.07)*Pump2Direction
 
     if(sysData[M]['Experiment']['cycles']%5==1): #Every so often we do a big output pump to make sure tubes are clear.
         sysData[M]['Pump2']['target']=0.25*sysData[M]['Pump2']['direction']
     
     
-    sysData[M]['Pump1']['target']=0.01*Pump1Direction #testing
-    sysData[M]['Pump2']['target']=0.01*Pump2Direction #testing
     
     
     if (sysData[M]['Experiment']['cycles']>15):
@@ -1666,25 +1848,37 @@ def RegulateOD(M):
     return
     
 def Zigzag(M):
-    #This function dithers OD in a "zigzag" pattern, useful for estimating growth rate.
+    #This function dithers OD in a "zigzag" pattern, and estimates growthrate. This function is only called when ZigZag mode is active.
     global sysData
     global sysItems
     M=str(M)
     centre=sysData[M]['OD']['target']
     current=sysData[M]['OD']['current']
     zig=sysData[M]['Zigzag']['Zig']
+    iteration=sysData[M]['Experiment']['cycles']
+	
     try:
         last=sysData[M]['OD']['record'][-1]
     except: #This will happen if you activate Zigzag in first control iteration!
         last=current
     
     if (current<centre-zig and last<centre):
+        if(sysData[M]['Zigzag']['target']!=5.0):
+            sysData[M]['Zigzag']['SwitchPoint']=iteration
         sysData[M]['Zigzag']['target']=5.0 #an excessively high OD value.
     elif (current>centre+zig and last>centre+zig):
         sysData[M]['Zigzag']['target']=centre-zig*1.5
-
+        sysData[M]['Zigzag']['SwitchPoint']=iteration
 
     sysData[M]['OD']['target']=sysData[M]['Zigzag']['target']
+	
+    #Subsequent section is for growth estimation.
+	
+    TimeSinceSwitch=iteration-sysData[M]['Zigzag']['SwitchPoint']
+    if (iteration>6 and TimeSinceSwitch>5): #The reason we wait a few minutes after starting growth is that new media may still be introduced, it takes a while for the growth to get going.
+        dGrowthRate=(math.log(current)-math.log(last))*60.0 #Converting to units of 1/hour
+        sysData[M]['GrowthRate']['current']=sysData[M]['GrowthRate']['current']*0.95 + dGrowthRate*0.05 #We are essentially implementing an online growth rate estimator with learning rate 0.05
+
     return
 
 
@@ -1781,13 +1975,28 @@ def runExperiment(M,placeholder):
     MeasureTemp(M,'External')
     MeasureTemp(M,'IR')
     MeasureFP(M) #And now fluorescent protein concentrations. 
+    
+    #Temporary Biofilm Section - the below makes the device all spectral data for all LEDs each cycle.
+    
+    # bands=['nm410' ,'nm440','nm470','nm510','nm550','nm583','nm620','nm670','CLEAR','NIR']    
+    # items= ['LEDA','LEDB','LEDC','LEDD','LEDE','LEDF','LEDG','LASER650']
+    # gains=['x10','x10','x10','x10','x10','x10','x10','x1']
+    # gi=-1
+    # for item in items:
+    #     gi=gi+1
+    #     SetOutputOn(M,item,1)
+    #     GetSpectrum(M,gains[gi])
+    #     SetOutputOn(M,item,0)
+    #     for band in bands:
+    #         sysData[M]['biofilm'][item][band]=int(sysData[M]['AS7341']['spectrum'][band])
 
     sysData[M]['OD']['Measuring']=0
     if (sysData[M]['OD']['ON']==1):
         RegulateOD(M) #Function that calculates new target pump rates, and sets pumps to desired rates. 
     
     LightActuation(M,1) 
-    CustomProgram(M)
+    if (sysData[M]['Custom']['ON']==1):
+        CustomProgram(M)
     
     Pump2Ontime=sysData[M]['Experiment']['cycleTime']*1.05*abs(sysData[M]['Pump2']['target'])*sysData[M]['Pump2']['ON']+0.5 #The amount of time Pump2 is going to be on for following RegulateOD above.
     time.sleep(Pump2Ontime) #Pause here is to prevent output pumping happening at the same time as stirring.
@@ -1810,6 +2019,7 @@ def runExperiment(M,placeholder):
     sysData[M]['Pump2']['record'].append(sysData[M]['Pump2']['target']*float(sysData[M]['Pump2']['ON']))
     sysData[M]['Pump3']['record'].append(sysData[M]['Pump3']['target']*float(sysData[M]['Pump3']['ON']))
     sysData[M]['Pump4']['record'].append(sysData[M]['Pump4']['target']*float(sysData[M]['Pump4']['ON']))
+    sysData[M]['GrowthRate']['record'].append(sysData[M]['GrowthRate']['current']*float(sysData[M]['Zigzag']['ON']))
     for FP in ['FP1','FP2','FP3']:
         if sysData[M][FP]['ON']==1:
             sysData[M][FP]['BaseRecord'].append(sysData[M][FP]['Base'])

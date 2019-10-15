@@ -499,6 +499,9 @@ function updateData(data){
           drawChart2(2,1,data.time.record.toString(),data.OD.record.toString(),data.OD.targetrecord.toString(),"","","","",'Time (h)','Optical Density','OD,Target')
           drawChart2(4,2,data.time.record.toString(),data.ThermometerIR.record.toString(),data.Thermostat.record.toString(),data.ThermometerInternal.record.toString(),data.ThermometerExternal.record.toString(),"","",'Time (h)','Temperature (C)','Culture Temperature,Target,Internal Air, External Air')
           drawChart2(1,3,data.time.record.toString(),data.Pump1.record.toString(),"" ,"","","","",'Time (h)','Pump Rate','Pump 1 (Input),')
+		  
+			  
+		
           //drawChart2(2,3,data.time.record.toString(),data.Pump1.record.toString(),data.Pump2.record.toString()  ,"","","","",'Time (h)','Pump Rate','Pump 1, Pump 2')
           //data.Pump2.record.toString()   <-- removed from above line.
           
@@ -524,6 +527,12 @@ function updateData(data){
           } else{
             drawChart2(2,6,data.time.record.toString(),data.FP3.Emit1Record.toString(),data.FP3.Emit2Record.toString(),"","","","",'Time (h)','Normalised FP Emission','Emission Band 1, Emission Band 2')
           }
+		  
+		  
+		    if (data.Zigzag.ON==1){
+		  drawChart2(1,7,data.time.record.toString(),data.GrowthRate.record.toString(),"" ,"","","","",'Time (h)','Growth Rate','Growth Rate,')
+		  }
+		  
 
         }
         
