@@ -554,7 +554,7 @@ def SetOutputTarget(M,item, value):
     M=str(M)
     if (M=="0"):
         M=sysItems['UIDevice']
-    print("Set item: " + str(item) + " to value " + str(value))
+    print(str(datetime.now()) + " Set item: " + str(item) + " to value " + str(value) + " on " + str(M))
     if (value<sysData[M][item]['min']):
         value=sysData[M][item]['min']
     if (value>sysData[M][item]['max']):
@@ -1144,7 +1144,73 @@ def CustomProgram(M):
         SetOutputTarget(M,'UV',UV)
         SetOutputOn(M,'UV',1)
         addTerminal(M,'Program = ' + str(program) + ' UV= ' + str(UV)+  ' integral= ' + str(integral))
-
+    elif (program=="C4"): #UV Integral Control Program Mk 4
+        rategain=float(Params[0]) 
+        timept=sysData[M]['Custom']['Status'] #This is the timestep as we follow in minutes
+        
+        UV=0.001*math.exp(timept*rategain) #So we just exponentialy increase UV over time!
+        sysData[M]['Custom']['param1']=UV
+        SetOutputTarget(M,'UV',UV)
+        SetOutputOn(M,'UV',1)
+        
+        timept=timept+1
+        sysData[M]['Custom']['Status']=timept
+            
+    elif (program=="C5"): #UV Dosing program
+        timept=int(sysData[M]['Custom']['Status']) #This is the timestep as we follow in minutes
+        sysData[M]['Custom']['Status']=timept+1 #Increment time as we have entered the loop another time!
+        
+        Pump2Ontime=sysData[M]['Experiment']['cycleTime']*1.05*abs(sysData[M]['Pump2']['target'])*sysData[M]['Pump2']['ON']+0.5 #The amount of time Pump2 is going to be on for following RegulateOD above.
+        time.sleep(Pump2Ontime) #Pause here is to prevent output pumping happening at the same time as stirring.
+        
+        timelength=300 #Time between doses in minutes
+        if(timept%timelength==2): #So this happens every 5 hours!
+            iters=(timept//timelength)
+            Dose0=float(Params[0])
+            Dose=Dose0*(2.0**float(iters)) #UV Dose, in terms of amount of time UV shoudl be left on at 1.0 intensity.
+            print(str(datetime.now()) + ' Gave dose ' + str(Dose) + " at iteration " + str(iters) + " on device " + str(M))
+            
+            if (Dose<30.0):  
+                powerlvl=Dose/30.0
+                SetOutputTarget(M,'UV',powerlvl)
+                Dose=30.0
+            else:    
+                SetOutputTarget(M,'UV',1.0) #Ensure UV is on at aopropriate intensity
+                
+            SetOutputOn(M,'UV',1) #Activate UV
+            time.sleep(Dose) #Wait for dose to be administered
+            SetOutputOn(M,'UV',0) #Deactivate UV
+            
+    elif (program=="C6"): #UV Dosing program 2 - constant value!
+        timept=int(sysData[M]['Custom']['Status']) #This is the timestep as we follow in minutes
+        sysData[M]['Custom']['Status']=timept+1 #Increment time as we have entered the loop another time!
+        
+        Pump2Ontime=sysData[M]['Experiment']['cycleTime']*1.05*abs(sysData[M]['Pump2']['target'])*sysData[M]['Pump2']['ON']+0.5 #The amount of time Pump2 is going to be on for following RegulateOD above.
+        time.sleep(Pump2Ontime) #Pause here is to prevent output pumping happening at the same time as stirring.
+    
+        timelength=300 #Time between doses in minutes
+        if(timept%timelength==2): #So this happens every 5 hours!
+            iters=(timept//timelength)
+            if iters>3:
+                iters=3
+                
+            Dose0=float(Params[0])
+            Dose=Dose0*(2.0**float(iters)) #UV Dose, in terms of amount of time UV shoudl be left on at 1.0 intensity.
+            print(str(datetime.now()) + ' Gave dose ' + str(Dose) + " at iteration " + str(iters) + " on device " + str(M))
+              
+            if (Dose<30.0):  
+                powerlvl=Dose/30.0
+                SetOutputTarget(M,'UV',powerlvl)
+                Dose=30.0
+            else:    
+                SetOutputTarget(M,'UV',1.0) #Ensure UV is on at aopropriate intensity
+            
+            SetOutputOn(M,'UV',1) #Activate UV
+            time.sleep(Dose) #Wait for dose to be administered
+            SetOutputOn(M,'UV',0) #Deactivate UV
+                
+                
+    
     return
 
 def CustomLEDCycle(M,LED,Value):
@@ -1700,39 +1766,65 @@ def csvData(M):
     lock.release() 
     
 
-    
-    
-
 def downsample(M):
     #In order to prevent the UI getting too laggy, we downsample the stored data every few hours. Note that this doesnt downsample that which has already been written to CSV, so no data is ever lost.
     global sysData
     M=str(M)
-
     
-    time=sysData[M]['time']['record']
-    tnew=list(np.linspace(time[0],time[-11],99))
-    tnew=tnew+time[-10:]
-    sysData[M]['time']['record']=tnew
     
-    sysData[M]['OD']['record']=list(np.interp(tnew,time,sysData[M]['OD']['record']))
-    sysData[M]['OD']['targetrecord']=list(np.interp(tnew,time,sysData[M]['OD']['targetrecord']))
-    sysData[M]['Thermostat']['record']=list(np.interp(tnew,time,sysData[M]['Thermostat']['record']))
-    sysData[M]['Light']['record']=list(np.interp(tnew,time,sysData[M]['Light']['record']))
-    sysData[M]['ThermometerInternal']['record']=list(np.interp(tnew,time,sysData[M]['ThermometerInternal']['record']))
-    sysData[M]['ThermometerExternal']['record']=list(np.interp(tnew,time,sysData[M]['ThermometerExternal']['record']))
-    sysData[M]['ThermometerIR']['record']=list(np.interp(tnew,time,sysData[M]['ThermometerIR']['record']))
-    sysData[M]['Pump1']['record']=list(np.interp(tnew,time,sysData[M]['Pump1']['record']))
-    sysData[M]['Pump2']['record']=list(np.interp(tnew,time,sysData[M]['Pump2']['record']))
-    sysData[M]['Pump3']['record']=list(np.interp(tnew,time,sysData[M]['Pump3']['record']))
-    sysData[M]['Pump4']['record']=list(np.interp(tnew,time,sysData[M]['Pump4']['record']))
-    sysData[M]['GrowthRate']['record']=list(np.interp(tnew,time,sysData[M]['GrowthRate']['record']))
+    
+    
+    #We now generate a new time vector which is downsampled at half the rate of the previous one
+    time=np.asarray(sysData[M]['time']['record'])
+    newlength=int(round(len(time)/2,2)-1)
+    tnew=np.linspace(time[0],time[-11],newlength)
+    tnew=np.concatenate([tnew,time[-10:]])
+    
+    #In the following we make a new array, index, which has the indices at which we want to resample our existing data vectors.
+    i=0
+    index=np.zeros((len(tnew),),dtype=int)
+    for timeval in tnew:
+        idx = np.searchsorted(time, timeval, side="left")
+        if idx > 0 and (idx == len(time) or np.abs(timeval - time[idx-1]) < np.abs(timeval - time[idx])):
+            index[i]=idx-1
+        else:
+            index[i]=idx
+        i=i+1
+    
+ 
+    sysData[M]['time']['record']=downsampleFunc(sysData[M]['time']['record'],index)
+    sysData[M]['OD']['record']=downsampleFunc(sysData[M]['OD']['record'],index)
+    sysData[M]['OD']['targetrecord']=downsampleFunc(sysData[M]['OD']['targetrecord'],index)
+    sysData[M]['Thermostat']['record']=downsampleFunc(sysData[M]['Thermostat']['record'],index)
+    sysData[M]['Light']['record']=downsampleFunc(sysData[M]['Light']['record'],index)
+    sysData[M]['ThermometerInternal']['record']=downsampleFunc(sysData[M]['ThermometerInternal']['record'],index)
+    sysData[M]['ThermometerExternal']['record']=downsampleFunc(sysData[M]['ThermometerExternal']['record'],index)
+    sysData[M]['ThermometerIR']['record']=downsampleFunc(sysData[M]['ThermometerIR']['record'],index)
+    sysData[M]['Pump1']['record']=downsampleFunc(sysData[M]['Pump1']['record'],index)
+    sysData[M]['Pump2']['record']=downsampleFunc(sysData[M]['Pump2']['record'],index)
+    sysData[M]['Pump3']['record']=downsampleFunc(sysData[M]['Pump3']['record'],index)
+    sysData[M]['Pump4']['record']=downsampleFunc(sysData[M]['Pump4']['record'],index)
+    sysData[M]['GrowthRate']['record']=downsampleFunc(sysData[M]['GrowthRate']['record'],index)
     
         
     for FP in ['FP1','FP2','FP3']:
-        sysData[M][FP]['BaseRecord']=list(np.interp(tnew,time,sysData[M][FP]['BaseRecord']))
-        sysData[M][FP]['Emit1Record']=list(np.interp(tnew,time,sysData[M][FP]['Emit1Record']))
-        sysData[M][FP]['Emit2Record']=list(np.interp(tnew,time,sysData[M][FP]['Emit2Record']))
+        sysData[M][FP]['BaseRecord']=downsampleFunc(sysData[M][FP]['BaseRecord'],index)
+        sysData[M][FP]['Emit1Record']=downsampleFunc(sysData[M][FP]['Emit1Record'],index)
+        sysData[M][FP]['Emit2Record']=downsampleFunc(sysData[M][FP]['Emit2Record'],index)
         
+def downsampleFunc(datain,index):
+    #This function Is used to downsample the arrays, taking the points selected by the index vector.
+    datain=list(datain)
+    newdata=[]
+    newdata=np.zeros((len(index),),dtype=float)
+
+    i=0
+    for loc in list(index):
+        newdata[i]=datain[int(loc)]
+        
+        i=i+1
+    return list(newdata)
+    
         
 
 
@@ -1995,8 +2087,12 @@ def runExperiment(M,placeholder):
         RegulateOD(M) #Function that calculates new target pump rates, and sets pumps to desired rates. 
     
     LightActuation(M,1) 
-    if (sysData[M]['Custom']['ON']==1):
-        CustomProgram(M)
+    
+    if (sysData[M]['Custom']['ON']==1): #Check if we have enabled custom programs
+        CustomThread=Thread(target = CustomProgram, args=(M,)) #We run this in a thread in case we are doing something slow, we dont want to hang up the main l00p. The comma after M is to cast the args as a tuple to prevent it iterating over the thread M
+        CustomThread.setDaemon(True)
+        CustomThread.start();
+
     
     Pump2Ontime=sysData[M]['Experiment']['cycleTime']*1.05*abs(sysData[M]['Pump2']['target'])*sysData[M]['Pump2']['ON']+0.5 #The amount of time Pump2 is going to be on for following RegulateOD above.
     time.sleep(Pump2Ontime) #Pause here is to prevent output pumping happening at the same time as stirring.
