@@ -17,10 +17,18 @@ function getSysData(){
 }
 
 
+var charts = [];
+
 function updateData(data){
         
         var running = Boolean(data.Experiment.ON); //True if Experiment is running.
+		
+		
+		 	
+		
          
+				
+		  
         // Update Terminal        
         document.getElementById("termI").innerHTML=data.Terminal.text;
         
@@ -490,6 +498,8 @@ function updateData(data){
               
         // Now to draw the charts
         if( document.getElementById("GraphReplot").value!== data.time.record.length || document.getElementById("FPRefresh").innerHTML != data.UIDevice){
+		  
+
           document.getElementById("GraphReplot").value=data.time.record.length;
           document.getElementById("FPRefresh").innerHTML = data.UIDevice
 
@@ -545,9 +555,16 @@ function updateData(data){
 
 
 function drawChart2(num,plotID,data_x,data_y1,data_y2,data_y3,data_y4,data_y5,data_y6,xlabel,ylabel,DataNames) {
-    var data = new google.visualization.DataTable();
-    
-    data.addColumn('number', xlabel);
+    if (charts[plotID] === undefined || charts[plotID] === null) {
+          charts[plotID] = new google.visualization.DataTable();
+   } else {
+          charts[plotID].clearChart();
+   }
+   
+   
+   
+	
+    charts[plotID].addColumn('number', xlabel);
     DataNames=DataNames.split(",")
     var ToPlot=data_x.split(",").map(Number);
     
@@ -565,7 +582,7 @@ function drawChart2(num,plotID,data_x,data_y1,data_y2,data_y3,data_y4,data_y5,da
      }
      
     for (var i=0;i<num;i++){
-      data.addColumn('number', DataNames[i]);
+      charts[plotID].addColumn('number', DataNames[i]);
       var yin = eval("data_y"+ (i+1))
       var data_y=yin.split(",").map(Number);
       for (j=0; j < ToPlot.length; j++){
@@ -575,7 +592,7 @@ function drawChart2(num,plotID,data_x,data_y1,data_y2,data_y3,data_y4,data_y5,da
     }
     
       
-      data.addRows(myarray)
+      charts[plotID].addRows(myarray)
       
     
      var options = {
@@ -593,7 +610,7 @@ function drawChart2(num,plotID,data_x,data_y1,data_y2,data_y3,data_y4,data_y5,da
       
     var chart = new google.visualization.LineChart(document.getElementById('chart_div'+plotID));
 
-    chart.draw(data, options);
+    chart.draw(charts[plotID], options);
       
       
     
