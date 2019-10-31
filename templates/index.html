@@ -20,7 +20,9 @@
 
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   
- 
+ <meta http-equiv='cache-control' content='no-cache'>
+<meta http-equiv='expires' content='0'>
+<meta http-equiv='pragma' content='no-cache'>
 
     </head>
     
@@ -35,19 +37,20 @@
 
 
 	
-	
+	<div id="titlesection"> <!-- We put this whole section inside a div so that if we have no internet connection (and the image fails to load) the TitleFailure function replaces the title. --> 
 	<div class="row">
     <div class="col">
       
     </div>
     <div class="col-md-auto">
-      <a href="https://chi.bio"><img  src="http://chi.bio/CBL.png" height="60px" style="padding-top: 5px;"></a>
+      <a href="https://chi.bio" target="_blank"><img  src="http://chi.bio/CBL.png" height="60px" style="padding-top: 5px;" onerror="TitleFailure()"></a>
     </div>
     <div class="col">
       <iframe src="https://chi.bio/news.html" seamless height="60px" width="100%" frameborder="0" marginheight="0" style="padding-top:15px;"></iframe>
+	  
     </div>
 	</div>
-	
+	</div>
 	
 <hr>
 
@@ -1408,6 +1411,14 @@
 
 
 
+
+
+
+<script>
+function TitleFailure() {
+  document.getElementById("titlesection").innerHTML="<center><h3>Chi.Bio Control Panel <br> NO INTERNET CONNECTION!</h3></center>";
+}
+</script>
 
 
 
