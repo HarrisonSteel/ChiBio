@@ -16,8 +16,8 @@ function getSysData(){
    
 }
 
-
 var charts = [];
+
 
 function updateData(data){
         
@@ -555,16 +555,9 @@ function updateData(data){
 
 
 function drawChart2(num,plotID,data_x,data_y1,data_y2,data_y3,data_y4,data_y5,data_y6,xlabel,ylabel,DataNames) {
-    if (charts[plotID] === undefined || charts[plotID] === null) {
-          charts[plotID] = new google.visualization.DataTable();
-   } else {
-          charts[plotID].clearChart();
-   }
-   
-   
-   
-	
-    charts[plotID].addColumn('number', xlabel);
+    var data = new google.visualization.DataTable();
+    
+    data.addColumn('number', xlabel);
     DataNames=DataNames.split(",")
     var ToPlot=data_x.split(",").map(Number);
     
@@ -582,7 +575,7 @@ function drawChart2(num,plotID,data_x,data_y1,data_y2,data_y3,data_y4,data_y5,da
      }
      
     for (var i=0;i<num;i++){
-      charts[plotID].addColumn('number', DataNames[i]);
+      data.addColumn('number', DataNames[i]);
       var yin = eval("data_y"+ (i+1))
       var data_y=yin.split(",").map(Number);
       for (j=0; j < ToPlot.length; j++){
@@ -592,7 +585,7 @@ function drawChart2(num,plotID,data_x,data_y1,data_y2,data_y3,data_y4,data_y5,da
     }
     
       
-      charts[plotID].addRows(myarray)
+      data.addRows(myarray)
       
     
      var options = {
@@ -608,15 +601,29 @@ function drawChart2(num,plotID,data_x,data_y1,data_y2,data_y3,data_y4,data_y5,da
         chartArea: {width: '80%'}
       };
       
-    var chart = new google.visualization.LineChart(document.getElementById('chart_div'+plotID));
+      if (charts[plotID] === undefined || charts[plotID] === null) {
+          charts[plotID] = new google.visualization.LineChart(document.getElementById('chart_div'+plotID));
+   } else {
+          charts[plotID].clearChart();
+   }
+   
+   
 
-    chart.draw(charts[plotID], options);
-      
+
+    charts[plotID].draw(data, options);
+	
+	//data.hv = {}; data.iv = {}; data.jv = {};
+	data={};
+	//chart={};
+
+
+
       
     
    
     
 
 }
+
 
 
