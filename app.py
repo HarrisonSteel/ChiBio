@@ -1460,17 +1460,12 @@ def CalibrateOD(M,item,value,value2):
     if (device=='LASER650'):
         a=sysData[M]['OD0']['LASERa']#Retrieve the calibration factors for OD.
         b=sysData[M]['OD0']['LASERb'] 
-        print(ODActual)
-        print(a)
-        print(b)
         if (ODActual<0):
             ODActual=0
             print("You put a negative OD into calibration! Setting it to 0")
         
         raw=((ODActual/a +  (b/(2*a))**2)**0.5) - (b/(2*a)) #THis is performing the inverse function of the quadratic OD calibration.
-        print(raw)
         OD0=(10.0**raw)*ODRaw
-        print(OD0)
         if (OD0<sysData[M][item]['min']):
             OD0=sysData[M][item]['min']
             print('OD calibration value seems too low?!')

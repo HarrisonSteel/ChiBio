@@ -604,7 +604,7 @@ function drawChart2(num,plotID,data_x,data_y1,data_y2,data_y3,data_y4,data_y5,da
       if (charts[plotID] === undefined || charts[plotID] === null) {
           charts[plotID] = new google.visualization.LineChart(document.getElementById('chart_div'+plotID));
    } else {
-          charts[plotID].clearChart();
+          charts[plotID].clearChart(); //We are doing this (clearing the chart each iteration) to avoid a memory leak in Google Charts!
    }
    
    
@@ -612,9 +612,8 @@ function drawChart2(num,plotID,data_x,data_y1,data_y2,data_y3,data_y4,data_y5,da
 
     charts[plotID].draw(data, options);
 	
-	//data.hv = {}; data.iv = {}; data.jv = {};
 	data={};
-	//chart={};
+
 
 
 
