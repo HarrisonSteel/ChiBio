@@ -282,8 +282,8 @@ def initialise(M):
     
     sysData[M]['OD']['current']=0.0
     sysData[M]['OD']['target']=sysData[M]['OD']['default'];
-    sysData[M]['OD0']['target']=65000
-    sysData[M]['OD0']['raw']=65000
+    sysData[M]['OD0']['target']=65000.0
+    sysData[M]['OD0']['raw']=65000.0
     sysData[M]['OD']['device']='LASER650'
     #sysData[M]['OD']['device']='LEDA'
     
@@ -1062,6 +1062,8 @@ def CustomProgram(M):
         reader = csv.reader(f)
         listin = list(reader)
     Params=listin[0]
+    addTerminal(M,'Running Program = ' + str(program) + ' on device ' + str(M))
+	
 	
     if (program=="C1"): #Optogenetic Integral Control Program
         integral=0.0 #Integral in integral controller
@@ -1551,15 +1553,16 @@ def MeasureOD(M):
     device=sysData[M]['OD']['device']
     if (device=='LASER650'):
         out=GetTransmission(M,'LASER650',['CLEAR'],1,255)
-        sysData[M]['OD0']['raw']=out[0]
+        sysData[M]['OD0']['raw']=float(out[0])
     
         a=sysData[M]['OD0']['LASERa']#Retrieve the calibration factors for OD.
         b=sysData[M]['OD0']['LASERb'] 
         try:
-            raw=math.log10(sysData[M]['OD0']['target']/out[0])
+            raw=math.log10(sysData[M]['OD0']['target']/sysData[M]['OD0']['raw'])
             sysData[M]['OD']['current']=raw*b + raw*raw*a
         except:
             sysData[M]['OD']['current']=0;
+            print(str(datetime.now()) + ' OD Measurement exception on ' + str(device))
     elif (device=='LEDF'):
         out=GetTransmission(M,'LEDF',['CLEAR'],7,255)
 
@@ -1579,6 +1582,7 @@ def MeasureOD(M):
             sysData[M]['OD']['current']=raw
         except:
             sysData[M]['OD']['current']=0;
+            print(str(datetime.now()) + ' OD Measurement exception on ' + str(device))
 
     elif (device=='LEDA'):
         out=GetTransmission(M,'LEDA',['CLEAR'],7,255)
@@ -1600,6 +1604,7 @@ def MeasureOD(M):
             sysData[M]['OD']['current']=raw
         except:
             sysData[M]['OD']['current']=0;
+            print(str(datetime.now()) + ' OD Measurement exception on ' + str(device))
     
     return ('', 204)  
     
@@ -1751,7 +1756,7 @@ def csvData(M):
 			
 	
     filename = sysData[M]['Experiment']['startTime'] + '_' + M + '_data' + '.csv'
-    
+    filename=filename.replace(":","_")
 
     lock.acquire() #We are avoiding writing to a file at the same time as we do digital communications, since it might potentially cause the computer to lag and consequently data transfer to fail.
     with open(filename, 'a') as csvFile: # Here we append the above row to our CSV file.
@@ -2136,6 +2141,7 @@ def runExperiment(M,placeholder):
         sysData[M]['Experiment']['startTimeRaw']=0 #We had to set this to zero during the write operation since the system does not like writing data in such a format.
         
         filename = sysData[M]['Experiment']['startTime'] + '_' + M + '.txt'
+        filename=filename.replace(":","_")
         f = open(filename,'w')
         simplejson.dump(sysData[M],f)
         f.close()
