@@ -1,16 +1,18 @@
-cd ~/../etc/ssh/
+cd ../../etc/ssh/
 echo "PermitRootLogin yes" >> sshd_config
 echo -e "root\nroot" | passwd root
 sed -i 's@-w /var/lib/cloud9@-w /root/chibio@' /lib/systemd/system/cloud9.service
 sed -i 's@1000@root@' /lib/systemd/system/cloud9.service
-cd ~/../etc/
+cd ..
 echo -e "nameserver 8.8.8.8\nnameserver 8.8.4.4" >> resolv.conf
 sudo /sbin/route add default gw 192.168.7.1
 sudo apt-get update
-sudo apt-get --assume-yes install unzip
-mkdir ~/../root/chibio
+mkdir ~/chibio
 cd ~/../home/debian
-unzip chibio1.zip -d ~/../root/chibio
+cp cb.sh ~/chibio
+cp app.py ~/chibio
+cp static -r ~/chibio
+cp templates -r ~/chibio
 sudo apt --assume-yes install python-pip
 pip install Gunicorn
 pip install flask
