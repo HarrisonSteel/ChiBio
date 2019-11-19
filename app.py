@@ -703,10 +703,10 @@ def PumpModulation(M,item):
     
     Ontime=cycletime*abs(sysData[M][item]['target'])
     
-    
-    if (item=="Pump1" and abs(sysData[M][item]['target'])<0.3): #Ensuring we run Pump1 after Pump2.
-        waittime=cycletime*abs(sysData[M]['Pump2']['target']) #We want to wait until the output pump has stopped, otherwise you are very inefficient with your media since it will be pumping out the fresh media fromthe top of the test tube right when it enters.
-        time.sleep(waittime+1.0)  
+    # Decided to remove the below section in order to prevent media buildup in the device if you are pumping in very rapidly. This check means that media is removed, then added. Removing this code means these happen simultaneously.
+    #if (item=="Pump1" and abs(sysData[M][item]['target'])<0.3): #Ensuring we run Pump1 after Pump2.
+    #    waittime=cycletime*abs(sysData[M]['Pump2']['target']) #We want to wait until the output pump has stopped, otherwise you are very inefficient with your media since it will be pumping out the fresh media fromthe top of the test tube right when it enters.
+    #    time.sleep(waittime+1.0)  
         
     
     if (sysData[M][item]['target']>0 and currentThread==sysDevices[M][item]['threadCount']): #Turning on pumps in forward direction
@@ -1896,8 +1896,8 @@ def RegulateOD(M):
             Pump1=0.0
 
     #Make sure values are in appropriate range. We want to limit the maximum size of pump1 to prevent it from overflowing.
-    if(Pump1>0.03):
-        Pump1=0.03
+    if(Pump1>0.02):
+        Pump1=0.02
     elif(Pump1<0):
         Pump1=0.0
 
