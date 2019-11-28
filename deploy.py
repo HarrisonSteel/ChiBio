@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import os
 
 stream = os.popen("ip addr show usb0 | grep -Po 'inet \K[\d.]+'")
