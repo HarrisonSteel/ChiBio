@@ -1039,13 +1039,12 @@ def SetCustom(Program,Status):
     if sysData[M][item]['ON']==1:
         sysData[M][item]['ON']=0
     else:
-		sysData[M][item]['Program']=str(Program)
-		sysData[M][item]['Status']=float(Status)
-		sysData[M][item]['ON']=1
-		sysData[M][item]['param1']=0.0 #Thus parameters get reset each time you restart your program.
-		sysData[M][item]['param2']=0.0 
-		sysData[M][item]['param3']=0.0
-	
+        sysData[M][item]['Program']=str(Program)
+        sysData[M][item]['Status']=float(Status)
+        sysData[M][item]['ON']=1
+        sysData[M][item]['param1']=0.0 #Thus parameters get reset each time you restart your program.
+        sysData[M][item]['param2']=0.0
+        sysData[M][item]['param3']=0.0
     return('',204)
 		
         
@@ -1708,7 +1707,15 @@ def csvData(M):
     #Used to format current data and write a new row to CSV file output. Note if you want to record any additional parameters/measurements then they need to be added to this function.
     global sysData
     M=str(M)
-    
+
+    fieldnames = ['exp_time','od_measured','od_setpoint','od_zero_setpoint','thermostat_setpoint','heating_rate',
+                  'internal_air_temp','external_air_temp','media_temp','opt_gen_act_int','pump_1_rate','pump_2_rate',
+                  'pump_3_rate','pump_4_rate','media_vol','stirring_rate','LED_395nm_setpoint','LED_457nm_setpoint',
+                  'LED_500nm_setpoint','LED_523nm_setpoint','LED_595nm_setpoint','LED_623nm_setpoint',
+                  'LED_6500K_setpoint','laser_setpoint','LED_UV_int','FP1_base','FP1_emit1','FP1_emit2','FP2_base',
+                  'FP2_emit1','FP2_emit2','FP3_base','FP3_emit1','FP3_emit2','custum_prog_param1','custum_prog_param2',
+                  'custum_prog_param3','custum_prog_status','zigzag_target','growth_rate']
+
     row=[sysData[M]['time']['record'][-1],
         sysData[M]['OD']['record'][-1],
         sysData[M]['OD']['targetrecord'][-1],
@@ -1732,12 +1739,9 @@ def csvData(M):
         if sysData[M][FP]['ON']==1:
             row=row+[sysData[M][FP]['Base']]
             row=row+[sysData[M][FP]['Emit1']]
-            if (sysData[M][FP]['Emit2Band']!= "OFF"):
-                row=row+[sysData[M][FP]['Emit2']]
-            else:
-                row=row+[0.0]
+            row=row+[sysData[M][FP]['Emit2']]
         else:
-            row=row+([0.0,0.0,0.0])
+            row=row+([0.0, 0.0, 0.0])
     
     row=row+[sysData[M]['Custom']['param1']*float(sysData[M]['Custom']['ON'])]
     row=row+[sysData[M]['Custom']['param2']*float(sysData[M]['Custom']['ON'])]
@@ -1753,12 +1757,19 @@ def csvData(M):
     #for item in items:
     #   for band in bands:
     #       row=row+[sysData[M]['biofilm'][item][band]]
-			
-	
+
+    if len(row) != len(fieldnames):
+        raise ValueError('CSV_WRITER: mismatch between column num and header num')
+
     filename = sysData[M]['Experiment']['startTime'] + '_' + M + '_data' + '.csv'
     filename=filename.replace(":","_")
 
     lock.acquire() #We are avoiding writing to a file at the same time as we do digital communications, since it might potentially cause the computer to lag and consequently data transfer to fail.
+    if os.path.isfile(filename) is False:
+        with open(filename, 'a') as csvFile:
+            writer = csv.writer(csvFile)
+            writer.writerow(fieldnames)
+
     with open(filename, 'a') as csvFile: # Here we append the above row to our CSV file.
         writer = csv.writer(csvFile)
         writer.writerow(row)
