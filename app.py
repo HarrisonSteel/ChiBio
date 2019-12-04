@@ -1578,8 +1578,10 @@ def SampleOD(M):
         with open(filename, 'a') as f:
             f.write("%s\n" % float(out[0]))
         time.sleep(0.25)
+    return ('', 204)
 
-        
+
+
 @application.route("/MeasureOD/<M>",methods=['POST'])
 def MeasureOD(M):
     #Measures laser transmission and calculates calibrated OD from this.
