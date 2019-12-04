@@ -1572,13 +1572,13 @@ def SampleOD(M):
         M = sysItems['UIDevice']
 
     filename = 'OD_Sampels_%s.csv'%M
-    for _ in range(4):
+    for idx in range(20):
         out=GetTransmission(M, 'LASER650', ['CLEAR'], 1, 255)
-        print(out)
+        print('%d: %f'%(idx, out[0]))
         with open(filename, 'a') as f:
             f.write("%s\n" % float(out[0]))
         time.sleep(0.25)
-    return ('', 204)
+    return '', 204
 
 
 
