@@ -1571,7 +1571,7 @@ def SampleOD(M):
     if M == "0":
         M = sysItems['UIDevice']
 
-    filename = 'OD_Sampels_%s.csv'%M
+    filename = 'OD_Sampels_%s_%d.csv'%(M,sysData[M]['DeviceID'])
     for idx in range(20):
         out=GetTransmission(M, 'LASER650', ['CLEAR'], 1, 255)
         print('%d: %f'%(idx, out[0]))
