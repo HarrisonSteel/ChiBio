@@ -1570,17 +1570,14 @@ def SampleOD(M):
     M = str(M)
     if M == "0":
         M = sysItems['UIDevice']
-    device = sysData[M]['OD']['device']
-    od_data = list()
-    for _ in range(100):
-        out=GetTransmission(M, 'LASER650', ['CLEAR'], 1, 255)
-        od_data.append(float(out[0]))
-        time.sleep(0.1)
 
     filename = 'OD_Sampels_%s.csv'%M
-    with open(filename, 'a') as f:
-        for item in od_data:
-            f.write("%s\n" % item)
+    for _ in range(4):
+        out=GetTransmission(M, 'LASER650', ['CLEAR'], 1, 255)
+        print(out)
+        with open(filename, 'a') as f:
+            f.write("%s\n" % float(out[0]))
+        time.sleep(0.25)
 
         
 @application.route("/MeasureOD/<M>",methods=['POST'])
