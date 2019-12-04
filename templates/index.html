@@ -135,6 +135,7 @@
             <div class="col-3 align-self-center">
              <b><font color="000000"> OD: </font></b> <br>
              <button id="ODMeasure">Measure</button>
+                <button id="ODSample">Sample OD</button>
            
           </div>
           <div class="col-2 align-self-center">
@@ -1909,6 +1910,22 @@ function TitleFailure() {
              })
         });
     </script>
+
+<script>
+    $(function() {
+        $('#ODSample').click(function(){
+
+            var targetURL = '/SampleOD/0';
+            $.ajax({
+                type:'POST',
+                url: targetURL,
+                success:function(response){
+                    getSysData();
+                }
+            });
+        })
+    });
+</script>
     
     
     
