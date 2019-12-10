@@ -1562,16 +1562,23 @@ def CalibrateOD(M,item,value,value2):
         print("Calibrated OD")
         
     return ('', 204)    
-    
-@application.route("/SampleOD/<M>",methods=['POST'])
-def SampleOD(M):
+
+
+@application.route("/SampleOD/<M>/<value>",methods=['POST'])
+def SampleOD(M, value):
     global sysData
     global sysItems
     M = str(M)
+    OD0Actual = float(value)
     if M == "0":
         M = sysItems['UIDevice']
+    if OD0Actual != 0:
+        od_value = str(OD0Actual)
+        od_value = od_value.replace('.','_')
+    else:
+        od_value = ''
 
-    filename = 'OD_Sampels_%s_%d.csv'%(M,sysData[M]['DeviceID'])
+    filename = 'OD_Sampels_%s_%s_%d.csv' % (M, od_value, sysData[M]['DeviceID'])
     for idx in range(20):
         out=GetTransmission(M, 'LASER650', ['CLEAR'], 1, 255)
         print('%d: %f'%(idx, out[0]))

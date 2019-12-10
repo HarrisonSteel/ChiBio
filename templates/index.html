@@ -1914,8 +1914,8 @@ function TitleFailure() {
 <script>
     $(function() {
         $('#ODSample').click(function(){
-
-            var targetURL = '/SampleOD/0';
+            var value = $('#OD0Actual').val();
+            var targetURL = '/SampleOD/0/' + value;
             $.ajax({
                 type:'POST',
                 url: targetURL,
