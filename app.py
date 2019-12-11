@@ -1577,8 +1577,8 @@ def SampleOD(M, value):
         od_value = od_value.replace('.','_')
     else:
         od_value = ''
-
-    filename = 'OD_Sampels_%s_%s_%d.csv' % (M, od_value, sysData[M]['DeviceID'])
+    print('Current actual OD: %s'%od_value)
+    filename = 'OD_Sampels_%s_%s_%s.csv' % (M, od_value, sysData[M]['DeviceID'])
     for idx in range(20):
         out=GetTransmission(M, 'LASER650', ['CLEAR'], 1, 255)
         print('%d: %f'%(idx, out[0]))
