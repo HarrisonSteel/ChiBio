@@ -18,6 +18,9 @@ import simplejson
 import copy
 import csv
 import smbus2 as smbus
+from pathlib import Path
+import collections
+
 
 
 application = Flask(__name__)
@@ -34,6 +37,7 @@ sysData = {'M0' : {
    'presentDevices' : { 'M0' : 0,'M1' : 0,'M2' : 0,'M3' : 0,'M4' : 0,'M5' : 0,'M6' : 0,'M7' : 0},
    'Version' : {'value' : 'Turbidostat V3.0'},
    'DeviceID' : '',
+   'DeviceName' : '',
    'time' : {'record' : []},
    'LEDA' : {'WL' : '395', 'default': 0.1, 'target' : 0.0, 'max': 1.0, 'min' : 0.0,'ON' : 0},
    'LEDB' : {'WL' : '457', 'default': 0.1, 'target' : 0.0, 'max': 1.0, 'min' : 0.0,'ON' : 0},
@@ -365,24 +369,45 @@ def initialise(M):
     #         print(str(i))
     #     sysDevices[M]['ThermometerInternal']['device'].readU8(int(0x05))
     # getData=I2CCom(M,which,1,16,0x05,0,0)
-    
 
     scanDevices(M)
     if(sysData[M]['present']==1):
         turnEverythingOff(M)
-        print(str(datetime.now()) + " Initialised " + str(M) +', Device ID: ' + sysData[M]['DeviceID'])
+        print(str(datetime.now()) + " Initialised " + str(M) + ', (' + sysData['DeviceName'] + ') Device ID: '
+              + sysData[M]['DeviceID'])
 
-    
-    
 
 def initialiseAll():
     # Initialisation function which runs at when software is started for the first time.
     sysItems['Multiplexer']['device']=I2C.get_i2c_device(0x74,2) 
     sysItems['FailCount']=0
     time.sleep(2.0) #This wait is to allow the watchdog circuit to boot.
+
+    # read device config
+    config_file = Path("config/device_config.csv")
+    if config_file.is_file():
+        device_config = dict()
+        fit_parameters = collections.namedtuple('fit_param', 'name LASERa LASERb')
+        with open(config_file) as f_config:
+            input_file = csv.DictReader(f_config)
+            for row in input_file:
+                fit_data = fit_parameters(name=row['device_name'],
+                                          LASERa=row['fit_quad_coeff'], LASERb=row['fit_lin_coeff'])
+                device_config[row['device_id']] = fit_data
+
     print(str(datetime.now()) + ' Initialising devices')
 
     for M in ['M0','M1','M2','M3','M4','M5','M6','M7']:
+        # adjust sysData based on device config (if config exists)
+        if config_file.is_file():
+            try:
+                fit_data = device_config[sysData[M]['DeviceID']]
+                sysData[M]['OD0']['LASERa'] = fit_data.LASERa
+                sysData[M]['OD0']['LASERb'] = fit_data.LASERb
+                sysData[M]['DeviceName'] = fit_data.name
+            except KeyError:
+                print('config for device %s was not found!' % sysData[M]['DeviceID'])
+
         initialise(M)
     scanDevices("all")
     
