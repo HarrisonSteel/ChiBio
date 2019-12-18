@@ -18,7 +18,6 @@ import simplejson
 import copy
 import csv
 import smbus2 as smbus
-from pathlib import Path
 import collections
 
 
@@ -371,21 +370,10 @@ def initialise(M):
     # getData=I2CCom(M,which,1,16,0x05,0,0)
 
     scanDevices(M)
-    if(sysData[M]['present']==1):
-        turnEverythingOff(M)
-        print(str(datetime.now()) + " Initialised " + str(M) + ', (' + sysData['DeviceName'] + ') Device ID: '
-              + sysData[M]['DeviceID'])
-
-
-def initialiseAll():
-    # Initialisation function which runs at when software is started for the first time.
-    sysItems['Multiplexer']['device']=I2C.get_i2c_device(0x74,2) 
-    sysItems['FailCount']=0
-    time.sleep(2.0) #This wait is to allow the watchdog circuit to boot.
-
+    # TODO remove this from here!
     # read device config
-    config_file = Path("config/device_config.csv")
-    if config_file.is_file():
+    config_file = "config/device_config.csv"
+    if os.path.exists(config_file):
         device_config = dict()
         fit_parameters = collections.namedtuple('fit_param', 'name LASERa LASERb')
         with open(config_file) as f_config:
@@ -395,19 +383,29 @@ def initialiseAll():
                                           LASERa=row['fit_quad_coeff'], LASERb=row['fit_lin_coeff'])
                 device_config[row['device_id']] = fit_data
 
-    print(str(datetime.now()) + ' Initialising devices')
-
-    for M in ['M0','M1','M2','M3','M4','M5','M6','M7']:
+    if sysData[M]['present']==1:
         # adjust sysData based on device config (if config exists)
-        if config_file.is_file():
+        if os.path.exists(config_file):
             try:
                 fit_data = device_config[sysData[M]['DeviceID']]
-                sysData[M]['OD0']['LASERa'] = fit_data.LASERa
-                sysData[M]['OD0']['LASERb'] = fit_data.LASERb
+                sysData[M]['OD0']['LASERa'] = float(fit_data.LASERa)
+                sysData[M]['OD0']['LASERb'] = float(fit_data.LASERb)
                 sysData[M]['DeviceName'] = fit_data.name
             except KeyError:
                 print('config for device %s was not found!' % sysData[M]['DeviceID'])
+        turnEverythingOff(M)
+        print(str(datetime.now()) + " Initialised " + str(M) + ', (' + sysData[M]['DeviceName'] + ') Device ID: '
+              + sysData[M]['DeviceID'])
 
+
+def initialiseAll():
+    # Initialisation function which runs at when software is started for the first time.
+    sysItems['Multiplexer']['device']=I2C.get_i2c_device(0x74,2) 
+    sysItems['FailCount']=0
+    time.sleep(2.0) #This wait is to allow the watchdog circuit to boot.
+    print(str(datetime.now()) + ' Initialising devices')
+
+    for M in ['M0','M1','M2','M3','M4','M5','M6','M7']:
         initialise(M)
     scanDevices("all")
     
