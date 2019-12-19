@@ -2139,11 +2139,11 @@ def runExperiment(M,placeholder):
     
     #We now meausre OD 4 times and take the average to reduce noise when in auto mode!
     ODV=0.0
-    for i in [0, 1, 2, 3]:
+    for i in range(0,15):
         MeasureOD(M)
         ODV=ODV+sysData[M]['OD']['current']
         time.sleep(0.25)
-    sysData[M]['OD']['current']=ODV/4.0
+    sysData[M]['OD']['current']=ODV/15.0
     
     MeasureTemp(M,'Internal') #Measuring all temperatures
     MeasureTemp(M,'External')
