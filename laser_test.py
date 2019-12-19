@@ -82,6 +82,8 @@ def do_stat_analysis(data, device_data, data_dir,SHOW_FIGS):
 
 
 def cost_fcn_quad(x, a, b):
+    if a < 0:
+        return math.inf
     return a*x**2+b*x
 
 
@@ -181,29 +183,29 @@ for dev_id in pd.unique(df['id']):
         pyplot.scatter(tmp_x, tmp_y,  color='green')
     pyplot.scatter(od_levels, od_i_median.values(),  color='red')
     # fitting a quadratic
-    z_quad, pcov_quad = curve_fit(f=cost_fcn_quad, xdata=x, ydata=y)
-    y_pred_quad = [z_quad[0]*x_act**2+z_quad[1]*x_act for x_act in x]
-    coefficient_of_determination_quad = r2_score(y, y_pred_quad)
+    z_quad, pcov_quad = curve_fit(f=cost_fcn_quad, xdata=y, ydata=x)
+    y_pred_quad = [z_quad[0]*x_act**2+z_quad[1]*x_act for x_act in y]
+    coefficient_of_determination_quad = r2_score(x, y_pred_quad)
     # save quad fitting for later use
     df_dev_names.loc[df_dev_names.device_id == dev_id, 'fit_quad_coeff'] = z_quad[0]
     df_dev_names.loc[df_dev_names.device_id == dev_id, 'fit_lin_coeff'] = z_quad[1]
     df_dev_names.loc[df_dev_names.device_id == dev_id, 'fit_r_square'] = coefficient_of_determination_quad
     # fitting linear
-    z_lin, pcov_lin = curve_fit(f=cost_fcn_lin, xdata=x, ydata=y)
-    y_pred_lin = [z_lin[0]*x_act for x_act in x]
-    coefficient_of_determination_lin = r2_score(y, y_pred_lin)
+    z_lin, pcov_lin = curve_fit(f=cost_fcn_lin, xdata=y, ydata=x)
+    y_pred_lin = [z_lin[0]*x_act for x_act in y]
+    coefficient_of_determination_lin = r2_score(x, y_pred_lin)
 
     # Chi.bio paper fit
-    y_pred_chibio = [-0.397*x_act**2+1.374*x_act for x_act in x]
-    coefficient_of_determination_chibio = r2_score(y, y_pred_chibio)
+    y_pred_chibio = [-0.397*x_act**2+1.374*x_act for x_act in y]
+    coefficient_of_determination_chibio = r2_score(x, y_pred_chibio)
 
     od_x_axis = np.linspace(0,1,11)
-    pyplot.plot(od_x_axis,z_quad[0]*od_x_axis**2+z_quad[1]*od_x_axis, color='blue')
-    pyplot.plot(od_x_axis,z_lin[0]*od_x_axis, color='red')
-    pyplot.plot(od_x_axis,-0.397*od_x_axis**2+1.374*od_x_axis, color='black')
+    pyplot.plot(z_quad[0]*od_x_axis**2+z_quad[1]*od_x_axis,od_x_axis, color='blue')
+    pyplot.plot(z_lin[0]*od_x_axis,od_x_axis, color='red')
+    pyplot.plot(0.397*od_x_axis**2+1.374*od_x_axis, od_x_axis, color='black')
     pyplot.legend(('Fit: $x=%gy^2+%gy$ | $r^2:%g$' % (z_quad[0], z_quad[1], coefficient_of_determination_quad),
                    'Fit: $x=%gy$ | $r^2: %g$' % (z_lin[0], coefficient_of_determination_lin),
-                   'Chi.Bio paper: $x=-0.397y^2+1.374y$ | $r^2:%g$' % coefficient_of_determination_chibio))
+                   'Chi.Bio paper: $x=0.397y^2+1.374y$ | $r^2:%g$' % coefficient_of_determination_chibio))
 
     pyplot.xlabel('$OD~[cm^{-1}]$ Data source: Spectrophotometer')
     pyplot.ylabel('$OD_i$ Data source: Chi.Bio')
