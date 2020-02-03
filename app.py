@@ -34,6 +34,7 @@ sysData = {'M0' : {
    'presentDevices' : { 'M0' : 0,'M1' : 0,'M2' : 0,'M3' : 0,'M4' : 0,'M5' : 0,'M6' : 0,'M7' : 0},
    'Version' : {'value' : 'Turbidostat V3.0'},
    'DeviceID' : '',
+   'DeviceName': '',
    'time' : {'record' : []},
    'LEDA' : {'WL' : '395', 'default': 0.1, 'target' : 0.0, 'max': 1.0, 'min' : 0.0,'ON' : 0},
    'LEDB' : {'WL' : '457', 'default': 0.1, 'target' : 0.0, 'max': 1.0, 'min' : 0.0,'ON' : 0},
@@ -370,10 +371,9 @@ def initialise(M):
     scanDevices(M)
     if(sysData[M]['present']==1):
         turnEverythingOff(M)
-        print(str(datetime.now()) + " Initialised " + str(M) +', Device ID: ' + sysData[M]['DeviceID'])
+        print(str(datetime.now()) + " Initialised " + str(M) + ', (' + sysData[M]['DeviceName'] + ') Device ID: '
+              + sysData[M]['DeviceID'])
 
-    
-    
 
 def initialiseAll():
     # Initialisation function which runs at when software is started for the first time.
@@ -584,12 +584,12 @@ def SetOutputOn(M,item,force):
     if (force==1):
         sysData[M][item]['ON']=1
         SetOutput(M,item)
-        return ('', 204)    
+        return ('', 204)
     
     elif(force==0):
         sysData[M][item]['ON']=0;
         SetOutput(M,item)
-        return ('', 204)    
+        return ('', 204)
     
     #Elsewise this is doing a flip operation (i.e. changes to opposite state to that which it is currently in)
     if (sysData[M][item]['ON']==0):
@@ -1336,7 +1336,7 @@ def I2CCom(M,device,rw,hl,data1,data2,SMBUSFLAG):
     
     global sysDevices
     if(sysData[M]['present']==0): #Something stupid has happened in software if this is the case!
-        print(str(datetime.now()) + ' Trying to communicate with absent device - bug in software!. Disabling hardware and software!')
+        print(str(datetime.now()) + ' Trying to communicate with M%s absent device - bug in software!. Disabling hardware and software!' % M)
         sysItems['Watchdog']['ON']=0 #Basically this will crash all the electronics and the software. 
         out=0
         tries=-1
