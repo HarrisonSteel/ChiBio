@@ -1,11 +1,10 @@
 # generate gaussian data
 from numpy.random import seed
 from numpy.random import randn
-from numpy import mean
-from numpy import std
+from numpy import mean, std, median
 import numpy as np
 from matplotlib import pyplot
-from scipy.stats import shapiro
+from scipy.stats import shapiro, mode
 import scipy
 import scipy.stats as stats
 import pylab
@@ -47,7 +46,8 @@ def do_stat_analysis(data, device_data, data_dir,SHOW_FIGS):
     print("SAMPLE SIZE: %d" % sample_num)
 
     # summarize
-    data_stat = 'mean=%.3f stdv=%.3f' % (mean(data), std(data))
+    sample_mode = stats.mode(data)
+    data_stat = 'median=%.3f mode=%.3f\n mean=%.3f stdv=%.3f' % (median(data), sample_mode.mode[0] , mean(data), std(data))
 
     # histogram plot
     fig, axs = pyplot.subplots(1, 2, constrained_layout=True)
@@ -196,10 +196,10 @@ for dev_id in pd.unique(df['id']):
     coefficient_of_determination_lin = r2_score(x, y_pred_lin)
 
     # Chi.bio paper fit
-    y_pred_chibio = [-0.397*x_act**2+1.374*x_act for x_act in y]
+    y_pred_chibio = [0.397*x_act**2+1.374*x_act for x_act in y]
     coefficient_of_determination_chibio = r2_score(x, y_pred_chibio)
 
-    od_x_axis = np.linspace(0,1,11)
+    od_x_axis = np.linspace(0,1.2,13)
     pyplot.plot(z_quad[0]*od_x_axis**2+z_quad[1]*od_x_axis,od_x_axis, color='blue')
     pyplot.plot(z_lin[0]*od_x_axis,od_x_axis, color='red')
     pyplot.plot(0.397*od_x_axis**2+1.374*od_x_axis, od_x_axis, color='black')
@@ -209,7 +209,7 @@ for dev_id in pd.unique(df['id']):
 
     pyplot.xlabel('$OD~[cm^{-1}]$ Data source: Spectrophotometer')
     pyplot.ylabel('$OD_i$ Data source: Chi.Bio')
-    pyplot.text(0.4, 0.05, '$OD_i$ sample num: %d, R sample num: %d'%(sample_num, sample_num))
+    pyplot.text(0.7, 0.35, '$OD_i$ sample num: %d, R sample num: %d'%(sample_num, sample_num))
     curve_fit_file_name = '%s_%s.png' % (device_name, dev_id)
     fig.savefig('%s/%s' % (data_dir, curve_fit_file_name))
     if SHOW_FIGS:
