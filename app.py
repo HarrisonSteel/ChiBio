@@ -21,6 +21,7 @@ import smbus2 as smbus
 
 
 application = Flask(__name__)
+application.config.from_pyfile('config/chibio_default.cfg', silent=True)
 application.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0 #Try this https://stackoverflow.com/questions/23112316/using-flask-how-do-i-modify-the-cache-control-header-for-all-output/23115561#23115561
 
 lock=Lock()
@@ -2066,13 +2067,14 @@ def runExperiment(M,placeholder):
     
     sysData[M]['OD']['Measuring']=1 #Begin measuring - this flag is just to indicate that a measurement is currently being taken.
     
-    #We now meausre OD 4 times and take the average to reduce noise when in auto mode!
-    ODV=0.0
-    for i in [0, 1, 2, 3]:
+    # We now measure OD N times and take the average to reduce noise when in auto mode!
+    check_config_value(config_key='NUMBER_OF_OD_MEASUREMENTS',default_value=4)
+    ODV = 0.0
+    for _ in range(0, application.config['NUMBER_OF_OD_MEASUREMENTS']-1):
         MeasureOD(M)
         ODV=ODV+sysData[M]['OD']['current']
         time.sleep(0.25)
-    sysData[M]['OD']['current']=ODV/4.0
+    sysData[M]['OD']['current'] = ODV/float(application.config['NUMBER_OF_OD_MEASUREMENTS'])
     
     MeasureTemp(M,'Internal') #Measuring all temperatures
     MeasureTemp(M,'External')
@@ -2187,7 +2189,12 @@ def runExperiment(M,placeholder):
         addTerminal(M,'Experiment Stopped')
    
 
-
+def check_config_value(config_key, default_value, critical=False):
+    if config_key not in application.config.keys():
+        if critical:
+            raise ValueError('config value for %s was not found, it must be set for operations' % config_key)
+        application.config[config_key] = default_value
+        application.logger.warning('config value %s was not found, set to default: %d' % (config_key, default_value))
 
 if __name__ == '__main__':
     initialiseAll()
