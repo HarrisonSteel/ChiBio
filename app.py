@@ -406,7 +406,13 @@ def turnEverythingOff(M):
     
     I2CCom(M,'DAC',0,8,int('00000000',2),int('00000000',2),0)#Sets all DAC Channels to zero!!! 
     setPWM(M,'PWM',sysItems['All'],0,0)
-    setPWM(M,'Pumps',sysItems['All'],0,0)
+
+    if application.config['TWO_PUMP_PER_DEVICE']:
+        chibios_to_shut_down = [0, 1, 2, 3]
+    else:
+        chibios_to_shut_down = [0, 1, 2, 4, 5, 6, 7]
+    if int(M[1]) in chibios_to_shut_down:
+        setPWM(M=M, device='Pumps', channels=sysItems['All'], fraction=0, ConsecutiveFails=0)
     
     SetOutputOn(M,'Stir',0)
     SetOutputOn(M,'Thermostat',0)
@@ -682,7 +688,29 @@ def PumpModulation(M,item):
     global sysData
     global sysItems
     global sysDevices
-    
+
+    check_config_value(config_key='TWO_PUMP_PER_DEVICE', default_value=False)
+
+    if application.config['TWO_PUMP_PER_DEVICE']:
+        pump_mapping = {'M4': 'M0', 'M5': 'M1', 'M6': 'M2', 'M7': 'M3'}
+        if int(M[1]) in [0, 1, 2 , 3]:
+            if item == 'Pump1' or item == 'Pump2':
+                MB = M
+                itemB = item
+            elif item == 'Pump3' or item == 'Pump4':
+                sysData[M][item]['ON'] = 0
+                return
+        else:
+            if item == 'Pump1' or item == 'Pump2':
+                MB = pump_mapping[M]
+                itemB = 'Pump' + str(int(item[4])+2)
+            elif item == 'Pump3' or item == 'Pump4':
+                sysData[M][item]['ON'] = 0
+                return
+    else:
+        MB = M
+        itemB = item
+
     sysDevices[M][item]['threadCount']=(sysDevices[M][item]['threadCount']+1)%100 #Index of the particular thread running.
     currentThread=sysDevices[M][item]['threadCount']
     
@@ -691,10 +719,10 @@ def PumpModulation(M,item):
         
     if (abs(sysData[M][item]['target']*sysData[M][item]['ON'])!=1 and currentThread==sysDevices[M][item]['threadCount']): #In all cases we turn things off to begin
         sysDevices[M][item]['active']=1
-        setPWM(M,'Pumps',sysItems[item]['In1'],0.0*float(sysData[M][item]['ON']),0)
-        setPWM(M,'Pumps',sysItems[item]['In2'],0.0*float(sysData[M][item]['ON']),0)
-        setPWM(M,'Pumps',sysItems[item]['In1'],0.0*float(sysData[M][item]['ON']),0)
-        setPWM(M,'Pumps',sysItems[item]['In2'],0.0*float(sysData[M][item]['ON']),0)
+        setPWM(MB,'Pumps',sysItems[itemB]['In1'],0.0*float(sysData[M][item]['ON']),0)
+        setPWM(MB,'Pumps',sysItems[itemB]['In2'],0.0*float(sysData[M][item]['ON']),0)
+        setPWM(MB,'Pumps',sysItems[itemB]['In1'],0.0*float(sysData[M][item]['ON']),0)
+        setPWM(MB,'Pumps',sysItems[itemB]['In2'],0.0*float(sysData[M][item]['ON']),0)
         sysDevices[M][item]['active']=0
     if (sysData[M][item]['ON']==0):
         return
@@ -712,23 +740,23 @@ def PumpModulation(M,item):
     
     if (sysData[M][item]['target']>0 and currentThread==sysDevices[M][item]['threadCount']): #Turning on pumps in forward direction
         sysDevices[M][item]['active']=1
-        setPWM(M,'Pumps',sysItems[item]['In1'],1.0*float(sysData[M][item]['ON']),0)
-        setPWM(M,'Pumps',sysItems[item]['In2'],0.0*float(sysData[M][item]['ON']),0)
+        setPWM(MB,'Pumps',sysItems[itemB]['In1'],1.0*float(sysData[M][item]['ON']),0)
+        setPWM(MB,'Pumps',sysItems[itemB]['In2'],0.0*float(sysData[M][item]['ON']),0)
         sysDevices[M][item]['active']=0
     elif (sysData[M][item]['target']<0 and currentThread==sysDevices[M][item]['threadCount']): #Or backward direction.
         sysDevices[M][item]['active']=1
-        setPWM(M,'Pumps',sysItems[item]['In1'],0.0*float(sysData[M][item]['ON']),0)
-        setPWM(M,'Pumps',sysItems[item]['In2'],1.0*float(sysData[M][item]['ON']),0)
+        setPWM(MB,'Pumps',sysItems[itemB]['In1'],0.0*float(sysData[M][item]['ON']),0)
+        setPWM(MB,'Pumps',sysItems[itemB]['In2'],1.0*float(sysData[M][item]['ON']),0)
         sysDevices[M][item]['active']=0
   
     time.sleep(Ontime)
     
     if(abs(sysData[M][item]['target'])!=1 and currentThread==sysDevices[M][item]['threadCount']): #Turning off pumps at appropriate time.
         sysDevices[M][item]['active']=1
-        setPWM(M,'Pumps',sysItems[item]['In1'],0.0*float(sysData[M][item]['ON']),0)
-        setPWM(M,'Pumps',sysItems[item]['In2'],0.0*float(sysData[M][item]['ON']),0)
-        setPWM(M,'Pumps',sysItems[item]['In1'],0.0*float(sysData[M][item]['ON']),0)
-        setPWM(M,'Pumps',sysItems[item]['In2'],0.0*float(sysData[M][item]['ON']),0)
+        setPWM(MB,'Pumps',sysItems[itemB]['In1'],0.0*float(sysData[M][item]['ON']),0)
+        setPWM(MB,'Pumps',sysItems[itemB]['In2'],0.0*float(sysData[M][item]['ON']),0)
+        setPWM(MB,'Pumps',sysItems[itemB]['In1'],0.0*float(sysData[M][item]['ON']),0)
+        setPWM(MB,'Pumps',sysItems[itemB]['In2'],0.0*float(sysData[M][item]['ON']),0)
         sysDevices[M][item]['active']=0
     
     Time2=datetime.now()
