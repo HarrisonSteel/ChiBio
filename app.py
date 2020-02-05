@@ -381,6 +381,7 @@ def initialiseAll():
     sysItems['Multiplexer']['device']=I2C.get_i2c_device(0x74,2) 
     sysItems['FailCount']=0
     time.sleep(2.0) #This wait is to allow the watchdog circuit to boot.
+    check_config_value(config_key='CONTINUOUS_STIRRING', default_value=False)
     print(str(datetime.now()) + ' Initialising devices')
 
     for M in ['M0','M1','M2','M3','M4','M5','M6','M7']:
@@ -592,7 +593,12 @@ def SetOutputOn(M,item,force):
         sysData[M][item]['ON']=1
         SetOutput(M,item)
         return ('', 204)
-    
+
+    elif application.config['CONTINUOUS_STIRRING'] and item == 'Stir' and force == 0:
+        sysData[M][item]['ON'] = 0.4
+        SetOutput(M, item)
+        return ('', 204)
+
     elif(force==0):
         sysData[M][item]['ON']=0;
         SetOutput(M,item)
