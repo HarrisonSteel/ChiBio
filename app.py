@@ -2220,9 +2220,11 @@ def runExperiment(M,placeholder):
 def check_config_value(config_key, default_value, critical=False):
     if config_key not in application.config.keys():
         if critical:
-            raise ValueError('config value for %s was not found, it must be set for operations' % config_key)
+            raise ValueError('config value for %s was not found, it must be set for safe operations' % config_key)
         application.config[config_key] = default_value
-        application.logger.warning('config value %s was not found, set to default: %d' % (config_key, default_value))
+        application.logger.warning('config value %s was not found and set to default: %d' % (config_key, default_value))
+    else:
+        application.logger.info('config found: %s=%s' % (config_key, application.config[config_key]))
 
 if __name__ == '__main__':
     initialiseAll()
