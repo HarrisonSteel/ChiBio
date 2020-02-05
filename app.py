@@ -185,6 +185,7 @@ def runWatchdog():
 
 GPIO.setup(sysItems['Watchdog']['pin'], GPIO.OUT)
 print(str(datetime.now()) + ' Starting watchdog')
+application.logger.info('Starting watchdog')
 sysItems['Watchdog']['thread']=Thread(target = runWatchdog, args=())
 sysItems['Watchdog']['thread'].setDaemon(True)
 sysItems['Watchdog']['thread'].start(); 
@@ -370,10 +371,12 @@ def initialise(M):
     
 
     scanDevices(M)
-    if(sysData[M]['present']==1):
+    if sysData[M]['present']==1:
         turnEverythingOff(M)
-        print(str(datetime.now()) + " Initialised " + str(M) + ', (' + sysData[M]['DeviceName'] + ') Device ID: '
-              + sysData[M]['DeviceID'])
+        device_str = " Initialised " + str(M) + ', (' + sysData[M]['DeviceName'] + ') Device ID: ' \
+                     + sysData[M]['DeviceID']
+        print(str(datetime.now()) + device_str)
+        application.logger.info(device_str)
 
 
 def initialiseAll():
@@ -382,6 +385,7 @@ def initialiseAll():
     sysItems['FailCount']=0
     time.sleep(2.0) #This wait is to allow the watchdog circuit to boot.
     print(str(datetime.now()) + ' Initialising devices')
+    application.logger.info('Initialising devices')
 
     for M in ['M0','M1','M2','M3','M4','M5','M6','M7']:
         initialise(M)
@@ -506,6 +510,7 @@ def GetID(M):
 def addTerminal(M,strIn):
     #Responsible for adding a new line to the terminal in the UI.
     global sysData
+    application.logger.info(strIn)
     now=datetime.now()
     timeString=now.strftime("%Y-%m-%d %H:%M:%S ")
     sysData[M]['Terminal']['text']=timeString + ' - ' +  str(strIn) + '</br>' + sysData[M]['Terminal']['text']
@@ -561,7 +566,9 @@ def SetOutputTarget(M,item, value):
     M=str(M)
     if (M=="0"):
         M=sysItems['UIDevice']
-    print(str(datetime.now()) + " Set item: " + str(item) + " to value " + str(value) + " on " + str(M))
+    info_msg = " Set item: " + str(item) + " to value " + str(value) + " on " + str(M)
+    print(str(datetime.now()) + info_msg)
+    application.logger.info(info_msg)
     if (value<sysData[M][item]['min']):
         value=sysData[M][item]['min']
     if (value>sysData[M][item]['max']):
@@ -582,9 +589,9 @@ def SetOutputOn(M,item,force):
     #General function used to switch an output on or off.
     global sysData
     item = str(item)
-    
     force = int(force)
     M=str(M)
+    application.logger.info('device: %s on %s, output is  %s ' % (item, M, force))
     if (M=="0"):
         M=sysItems['UIDevice']
     #The first statements are to force it on or off it the command is called in force mode (force implies it sets it to a given state, regardless of what it is currently in)
@@ -1365,8 +1372,11 @@ def I2CCom(M,device,rw,hl,data1,data2,SMBUSFLAG):
     
     global sysDevices
     if(sysData[M]['present']==0): #Something stupid has happened in software if this is the case!
-        print(str(datetime.now()) + ' Trying to communicate with M%s absent device - bug in software!. Disabling hardware and software!' % M)
-        sysItems['Watchdog']['ON']=0 #Basically this will crash all the electronics and the software. 
+        critical_msg = ' Trying to communicate with M%s absent device - bug in software!. ' \
+                       'Disabling hardware and software!' % M
+        print(str(datetime.now()) + critical_msg)
+        application.logger.critical(critical_msg)
+        sysItems['Watchdog']['ON']=0 #Basically this will crash all the electronics and the software.
         out=0
         tries=-1
         os._exit(4)
@@ -1384,27 +1394,39 @@ def I2CCom(M,device,rw,hl,data1,data2,SMBUSFLAG):
             check=(sysItems['Multiplexer']['device'].readRaw8()) #We check that the Multiplexer is indeed connected to the correct channel.
             if(check==int(sysItems['Multiplexer'][M],2)):
                 tries=-1
+                application.logger.debug('Connection to mux on M%s to channel %s has been established' % (M, check))
             else:
                 tries=tries+1
                 time.sleep(0.02)
-                print(str(datetime.now()) + ' Multiplexer didnt switch ' + str(tries) + " times on " + str(M))
+                warn_msg = ' Multiplexer didnt switch ' + str(tries) + " times on " + str(M)
+                print(str(datetime.now()) + warn_msg)
+                application.logger.warning(warn_msg)
         except: #If there is an error in the above.
             tries=tries+1
             time.sleep(0.02)
-            print(str(datetime.now()) + ' Failed Multiplexer Comms ' + str(tries) + " times")
+            warn_msg = ' Failed Multiplexer Comms ' + str(tries) + " times"
+            print(str(datetime.now()) + warn_msg)
+            application.logger.warning(warn_msg)
+
             if (tries>2):
                 try:
-                    sysItems['Multiplexer']['device'].write8(int(0x00),int(0x00)) #Disconnect multiplexer. 
-                    print('Disconnected multiplexer on ' + str(M) + ', trying to connect again.')
+                    sysItems['Multiplexer']['device'].write8(int(0x00),int(0x00)) #Disconnect multiplexer.
+                    warn_msg = 'Disconnected multiplexer on ' + str(M) + ', trying to connect again.'
+                    print(warn_msg)
+                    application.logger.warning(warn_msg)
                 except:
-                    print('Failed to recover multiplexer on device ' + str(M))
+                    warn_msg = 'Failed to recover multiplexer on device ' + str(M)
+                    print(warn_msg)
+                    application.logger.warning(warn_msg)
             if tries==5:
                 time.sleep(0.2)
                 
         if tries>20: #If it has failed a number of times then likely something is seriously wrong, so we crash the software.
             sysItems['Watchdog']['ON']=0 #Basically this will crash all the electronics and the software. 
             out=0
-            print('Failed to communicate to Multiplexer 10 times. Disabling hardware and software!')
+            critical_msg = 'Failed to communicate to Multiplexer %d times. Disabling hardware and software!' % 20
+            print(critical_msg)
+            application.logger.critical(critical_msg)
             tries=-1
             os._exit(4)
     
@@ -1438,10 +1460,14 @@ def I2CCom(M,device,rw,hl,data1,data2,SMBUSFLAG):
             tries=tries+1
             
             if (device!="ThermometerInternal"):
-                print(str(datetime.now()) + ' Failed ' + str(device) + ' comms ' + str(tries) + " times on device " + str(M) )
+                warn_msg = ' Failed ' + str(device) + ' comms ' + str(tries) + " times on device " + str(M)
+                print(str(datetime.now()) + warn_msg)
+                application.logger.warning(warn_msg)
                 time.sleep(0.02)
             if (device=='AS7341'):
-                print(str(datetime.now()) + ' Failed  AS7341 in I2CCom while trying to send ' + str(data1)  + " and " + str(data2))
+                warn_msg = ' Failed  AS7341 in I2CCom while trying to send ' + str(data1) + " and " + str(data2)
+                print(str(datetime.now()) + warn_msg)
+                application.logger.warning(warn_msg)
                 out=-1
                 tries=-1
 
@@ -1453,7 +1479,9 @@ def I2CCom(M,device,rw,hl,data1,data2,SMBUSFLAG):
             sysItems['Watchdog']['ON']=0 #Basically this will crash all the electronics and the software. 
             out=0
             sysData[M]['present']=0
-            print('Failed to communicate to a device 10 times. Disabling hardware and software!')
+            critical_msg = 'Failed to communicate to a device %d times. Disabling hardware and software!' % 10
+            print(critical_msg)
+            application.logger.critical(critical_msg)
             tries=-1
             os._exit(4)
                 
@@ -1464,7 +1492,9 @@ def I2CCom(M,device,rw,hl,data1,data2,SMBUSFLAG):
     try:
         sysItems['Multiplexer']['device'].write8(int(0x00),int(0x00)) #Disconnect multiplexer with each iteration. 
     except:
-        print('Failed to disconnect multiplexer on device ' + str(M))
+        warn_msg = 'Failed to disconnect multiplexer on device ' + str(M)
+        print(warn_msg)
+        application.logger.warning(warn_msg)
 
 
     
@@ -1693,7 +1723,8 @@ def MeasureTemp(M,which):
 def setPWM(M,device,channels,fraction,ConsecutiveFails):
     #Sets up the PWM chip (either the one in the reactor or on the pump board)
     global sysItems
-    
+    application.logger.info('PWM command: %s device: %s channels: %s fractions: %s ConsecutiveFails: %d' %
+                            (M, device, channels, fraction, ConsecutiveFails))
     if sysDevices[M][device]['startup']==0: #The following boots up the respective PWM device to the correct frequency. Potentially there is a bug here; if the device loses power after this code is run for the first time it may revert to default PWM frequency.
         I2CCom(M,device,0,8,0x00,0x11,0) #Turns off device.
         I2CCom(M,device,0,8,0xfe,sysDevices[M][device]['frequency'],0) #Sets frequency of PWM oscillator. 
@@ -1721,8 +1752,10 @@ def setPWM(M,device,channels,fraction,ConsecutiveFails):
         ConsecutiveFails=ConsecutiveFails+1
         print(str(datetime.now()) + ' Failed transmission test on ' + str(device) + ' ' + str(ConsecutiveFails) + ' times consecutively on device '  + str(M) )
         if ConsecutiveFails>10:
-            sysItems['Watchdog']['ON']=0 #Basically this will crash all the electronics and the software. 
-            print('Failed to communicate to PWM 10 times. Disabling hardware and software!')
+            sysItems['Watchdog']['ON']=0 #Basically this will crash all the electronics and the software.
+            error_msg = 'Failed to communicate to PWM %d times. Disabling hardware and software!' % 10
+            print(error_msg)
+            application.logger.critical(error_msg)
             os._exit(4)
         else:
             time.sleep(0.1)
