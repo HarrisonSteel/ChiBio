@@ -385,6 +385,8 @@ def initialiseAll():
 
     check_config_value(config_key='TWO_PUMPS_PER_DEVICE', default_value=False)
     check_config_value(config_key='NUMBER_OF_OD_MEASUREMENTS', default_value=4)
+    check_config_value(config_key='DEVICE_COMM_FAILURE_THRESHOLD', default_value=10)
+
 
     for M in ['M0','M1','M2','M3','M4','M5','M6','M7']:
         initialise(M)
@@ -1450,11 +1452,12 @@ def I2CCom(M,device,rw,hl,data1,data2,SMBUSFLAG):
             out=0
             sysData[M]['present']=0
             tries=-1
-        if tries>10: #In this case something else has gone wrong, so we panic.
+        if tries >= application.config['DEVICE_COMM_FAILURE_THRESHOLD']: #In this case something else has gone wrong, so we panic.
             sysItems['Watchdog']['ON']=0 #Basically this will crash all the electronics and the software. 
             out=0
             sysData[M]['present']=0
-            print('Failed to communicate to a device 10 times. Disabling hardware and software!')
+            print('Failed to communicate to a device %d times. Disabling hardware and software!' %
+                  application.config['DEVICE_COMM_FAILURE_THRESHOLD'])
             tries=-1
             os._exit(4)
                 
