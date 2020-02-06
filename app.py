@@ -383,6 +383,9 @@ def initialiseAll():
     time.sleep(2.0) #This wait is to allow the watchdog circuit to boot.
     print(str(datetime.now()) + ' Initialising devices')
 
+    check_config_value(config_key='TWO_PUMPS_PER_DEVICE', default_value=False)
+    check_config_value(config_key='NUMBER_OF_OD_MEASUREMENTS', default_value=4)
+
     for M in ['M0','M1','M2','M3','M4','M5','M6','M7']:
         initialise(M)
     scanDevices("all")
@@ -407,7 +410,7 @@ def turnEverythingOff(M):
     I2CCom(M,'DAC',0,8,int('00000000',2),int('00000000',2),0)#Sets all DAC Channels to zero!!! 
     setPWM(M,'PWM',sysItems['All'],0,0)
 
-    if application.config['TWO_PUMP_PER_DEVICE']:
+    if application.config['TWO_PUMPS_PER_DEVICE']:
         chibios_to_shut_down = [0, 1, 2, 3]
     else:
         chibios_to_shut_down = [0, 1, 2, 4, 5, 6, 7]
@@ -689,11 +692,9 @@ def PumpModulation(M,item):
     global sysItems
     global sysDevices
 
-    check_config_value(config_key='TWO_PUMP_PER_DEVICE', default_value=False)
-
-    if application.config['TWO_PUMP_PER_DEVICE']:
+    if application.config['TWO_PUMPS_PER_DEVICE']:
         pump_mapping = {'M4': 'M0', 'M5': 'M1', 'M6': 'M2', 'M7': 'M3'}
-        if int(M[1]) in [0, 1, 2 , 3]:
+        if int(M[1]) in [0, 1, 2, 3]:
             if item == 'Pump1' or item == 'Pump2':
                 MB = M
                 itemB = item
@@ -2096,7 +2097,6 @@ def runExperiment(M,placeholder):
     sysData[M]['OD']['Measuring']=1 #Begin measuring - this flag is just to indicate that a measurement is currently being taken.
     
     # We now measure OD N times and take the average to reduce noise when in auto mode!
-    check_config_value(config_key='NUMBER_OF_OD_MEASUREMENTS',default_value=4)
     ODV = 0.0
     for _ in range(0, application.config['NUMBER_OF_OD_MEASUREMENTS']-1):
         MeasureOD(M)
