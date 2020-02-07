@@ -387,6 +387,11 @@ def initialiseAll():
     print(str(datetime.now()) + ' Initialising devices')
     application.logger.info('Initialising devices')
 
+    check_config_value(config_key='TWO_PUMPS_PER_DEVICE', default_value=False)
+    check_config_value(config_key='NUMBER_OF_OD_MEASUREMENTS', default_value=4)
+    check_config_value(config_key='DEVICE_COMM_FAILURE_THRESHOLD', default_value=10)
+
+
     for M in ['M0','M1','M2','M3','M4','M5','M6','M7']:
         initialise(M)
     scanDevices("all")
@@ -411,7 +416,7 @@ def turnEverythingOff(M):
     I2CCom(M,'DAC',0,8,int('00000000',2),int('00000000',2),0)#Sets all DAC Channels to zero!!! 
     setPWM(M,'PWM',sysItems['All'],0,0)
 
-    if application.config['TWO_PUMP_PER_DEVICE']:
+    if application.config['TWO_PUMPS_PER_DEVICE']:
         chibios_to_shut_down = [0, 1, 2, 3]
     else:
         chibios_to_shut_down = [0, 1, 2, 4, 5, 6, 7]
@@ -696,11 +701,9 @@ def PumpModulation(M,item):
     global sysItems
     global sysDevices
 
-    check_config_value(config_key='TWO_PUMP_PER_DEVICE', default_value=False)
-
-    if application.config['TWO_PUMP_PER_DEVICE']:
+    if application.config['TWO_PUMPS_PER_DEVICE']:
         pump_mapping = {'M4': 'M0', 'M5': 'M1', 'M6': 'M2', 'M7': 'M3'}
-        if int(M[1]) in [0, 1, 2 , 3]:
+        if int(M[1]) in [0, 1, 2, 3]:
             if item == 'Pump1' or item == 'Pump2':
                 MB = M
                 itemB = item
@@ -1475,11 +1478,11 @@ def I2CCom(M,device,rw,hl,data1,data2,SMBUSFLAG):
             out=0
             sysData[M]['present']=0
             tries=-1
-        if tries>10: #In this case something else has gone wrong, so we panic.
+        if tries >= application.config['DEVICE_COMM_FAILURE_THRESHOLD']: #In this case something else has gone wrong, so we panic.
             sysItems['Watchdog']['ON']=0 #Basically this will crash all the electronics and the software. 
             out=0
             sysData[M]['present']=0
-            critical_msg = 'Failed to communicate to a device %d times. Disabling hardware and software!' % 10
+            critical_msg = 'Failed to communicate to a device %d times. Disabling hardware and software!' % application.config['DEVICE_COMM_FAILURE_THRESHOLD']
             print(critical_msg)
             application.logger.critical(critical_msg)
             tries=-1
@@ -2129,7 +2132,6 @@ def runExperiment(M,placeholder):
     sysData[M]['OD']['Measuring']=1 #Begin measuring - this flag is just to indicate that a measurement is currently being taken.
     
     # We now measure OD N times and take the average to reduce noise when in auto mode!
-    check_config_value(config_key='NUMBER_OF_OD_MEASUREMENTS',default_value=4)
     ODV = 0.0
     for _ in range(0, application.config['NUMBER_OF_OD_MEASUREMENTS']-1):
         MeasureOD(M)
