@@ -18,11 +18,30 @@ import simplejson
 import copy
 import csv
 import smbus2 as smbus
+import logging
+from logging.handlers import TimedRotatingFileHandler
 
+
+
+def check_config_value(config_key, default_value, critical=False):
+    if config_key not in application.config.keys():
+        if critical:
+            raise ValueError('config value for %s was not found, it must be set for safe operations' % config_key)
+        application.config[config_key] = default_value
+        application.logger.warning('config value %s was not found and set to default: %s' % (config_key, default_value))
+    else:
+        application.logger.info('config found: %s=%s' % (config_key, application.config[config_key]))
 
 application = Flask(__name__)
 application.config.from_pyfile('config/chibio_default.cfg', silent=True)
 application.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0 #Try this https://stackoverflow.com/questions/23112316/using-flask-how-do-i-modify-the-cache-control-header-for-all-output/23115561#23115561
+check_config_value(config_key='LOG_LEVEL', default_value='WARNING')
+log_level = logging.getLevelName(application.config['LOG_LEVEL'])
+application.logger.setLevel(level=log_level)
+handler = TimedRotatingFileHandler(filename='./log/chibio.log',when="w0", interval=1, backupCount=5)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+application.logger.addHandler(handler)
 
 lock=Lock()
         
@@ -297,7 +316,7 @@ def initialise(M):
     sysData[M]['Volume']['target']=20.0
     
     clearTerminal(M)
-    addTerminal(M,'System Initialised')
+    addTerminal(M,'System for %s Initialised' % M)
   
     sysData[M]['Experiment']['ON']=0
     sysData[M]['Experiment']['cycles']=0
@@ -529,7 +548,7 @@ def clearTerminal(M):
         M=sysItems['UIDevice']
         
     sysData[M]['Terminal']['text']=''
-    addTerminal(M,'Terminal Cleared')
+    addTerminal(M,'Terminal on %s Cleared' % M)
     return ('', 204)   
     
 
@@ -1136,7 +1155,7 @@ def CustomProgram(M):
         RedThread.start();
         sysData[M]['Custom']['param1']=green
         sysData[M]['Custom']['param2']=red
-        addTerminal(M,'Program = ' + str(program) + ' green= ' + str(green)+ ' red= ' + str(red) + ' integral= ' + str(integral))
+        addTerminal(M,'Program on %s = ' % M + str(program) + ' green= ' + str(green)+ ' red= ' + str(red) + ' integral= ' + str(integral))
 	
     elif (program=="C2"): #UV Integral Control Program
         integral=0.0 #Integral in integral controller
@@ -1154,7 +1173,7 @@ def CustomProgram(M):
         sysData[M]['Custom']['param1']=UV
         SetOutputTarget(M,'UV',UV)
         SetOutputOn(M,'UV',1)
-        addTerminal(M,'Program = ' + str(program) + ' UV= ' + str(UV)+  ' integral= ' + str(integral))
+        addTerminal(M,'Program on %s= ' % M + str(program) + ' UV= ' + str(UV)+  ' integral= ' + str(integral))
         
     elif (program=="C3"): #UV Integral Control Program Mk 2
         integral=sysData[M]['Custom']['param2'] #Integral in integral controller
@@ -1183,7 +1202,7 @@ def CustomProgram(M):
         sysData[M]['Custom']['param1']=UV
         SetOutputTarget(M,'UV',UV)
         SetOutputOn(M,'UV',1)
-        addTerminal(M,'Program = ' + str(program) + ' UV= ' + str(UV)+  ' integral= ' + str(integral))
+        addTerminal(M,'Program on %s = ' % M + str(program) + ' UV= ' + str(UV)+  ' integral= ' + str(integral))
     elif (program=="C4"): #UV Integral Control Program Mk 4
         rategain=float(Params[0]) 
         timept=sysData[M]['Custom']['Status'] #This is the timestep as we follow in minutes
@@ -1346,7 +1365,7 @@ def CharacteriseDevice2(M):
             print(item + ' ' + str(power))
             for band in bands:
                 result[item][band].append(int(sysData[M]['AS7341']['spectrum'][band]))
-            addTerminal(M,'Measured Item = ' + str(item) + ' at power ' + str(power))
+            addTerminal(M,'Measured Item on %s = ' % M + str(item) + ' at power ' + str(power))
             time.sleep(0.05)
                 
     
@@ -1397,7 +1416,7 @@ def I2CCom(M,device,rw,hl,data1,data2,SMBUSFLAG):
             check=(sysItems['Multiplexer']['device'].readRaw8()) #We check that the Multiplexer is indeed connected to the correct channel.
             if(check==int(sysItems['Multiplexer'][M],2)):
                 tries=-1
-                application.logger.debug('Connection to mux on M%s to channel %s has been established' % (M, check))
+                application.logger.debug('Connection to mux on %s to channel %s has been established' % (M, check))
             else:
                 tries=tries+1
                 time.sleep(0.02)
@@ -1726,7 +1745,7 @@ def MeasureTemp(M,which):
 def setPWM(M,device,channels,fraction,ConsecutiveFails):
     #Sets up the PWM chip (either the one in the reactor or on the pump board)
     global sysItems
-    application.logger.info('PWM command: %s device: %s channels: %s fractions: %s ConsecutiveFails: %d' %
+    application.logger.debug('PWM command: %s device: %s channels: %s fractions: %s ConsecutiveFails: %d' %
                             (M, device, channels, fraction, ConsecutiveFails))
     if sysDevices[M][device]['startup']==0: #The following boots up the respective PWM device to the correct frequency. Potentially there is a bug here; if the device loses power after this code is run for the first time it may revert to default PWM frequency.
         I2CCom(M,device,0,8,0x00,0x11,0) #Turns off device.
@@ -2072,7 +2091,7 @@ def ExperimentStartStop(M,value):
     if (value and (sysData[M]['Experiment']['ON']==0)):
         
         sysData[M]['Experiment']['ON']=1
-        addTerminal(M,'Experiment Started')
+        addTerminal(M,'Experiment on %s Started' % M)
         
         if (sysData[M]['Experiment']['cycles']==0):
             now=datetime.now()
@@ -2093,7 +2112,7 @@ def ExperimentStartStop(M,value):
     else:
         sysData[M]['Experiment']['ON']=0
         sysData[M]['OD']['ON']=0
-        addTerminal(M,'Experiment Stopping at end of cycle')
+        addTerminal(M,'Experiment on %s Stopping at end of cycle' % M)
         SetOutputOn(M,'Pump1',0)
         SetOutputOn(M,'Pump2',0)
         SetOutputOn(M,'Stir',0)
@@ -2119,14 +2138,14 @@ def runExperiment(M,placeholder):
     elapsedTime=now-sysData[M]['Experiment']['startTimeRaw']
     elapsedTimeSeconds=round(elapsedTime.total_seconds(),2)
     sysData[M]['Experiment']['cycles']=sysData[M]['Experiment']['cycles']+1
-    addTerminal(M,'Cycle ' + str(sysData[M]['Experiment']['cycles']) + ' Started')
+    addTerminal(M,'Cycle ' + str(sysData[M]['Experiment']['cycles']) + ' on %s Started' % M)
     CycleTime=sysData[M]['Experiment']['cycleTime']
 
     SetOutputOn(M,'Stir',0) #Turning stirring off
     time.sleep(5.0) #Wait for liquid to settle.
     if (sysData[M]['Experiment']['ON']==0):
         turnEverythingOff(M)
-        addTerminal(M,'Experiment Stopped')
+        addTerminal(M,'Experiment on %s Stopped' % M)
         return
     
     sysData[M]['OD']['Measuring']=1 #Begin measuring - this flag is just to indicate that a measurement is currently being taken.
@@ -2226,7 +2245,7 @@ def runExperiment(M,placeholder):
 
     if (sysData[M]['Experiment']['ON']==0):
         turnEverythingOff(M)
-        addTerminal(M,'Experiment Stopped')
+        addTerminal(M, 'Experiment on %s Stopped' % M)
         return
     
     nowend=datetime.now()
@@ -2235,11 +2254,11 @@ def runExperiment(M,placeholder):
     sleeptime=CycleTime-elapsedTimeSeconds2
     if (sleeptime<0):
         sleeptime=0
-        addTerminal(M,'Experiment Cycle Time is too short!!!')    
+        addTerminal(M, 'Experiment Cycle Time on %s is too short!!!' % M)
         
     time.sleep(sleeptime)
     LightActuation(M,0) #Turn light actuation off if it is running.
-    addTerminal(M,'Cycle ' + str(sysData[M]['Experiment']['cycles']) + ' Complete')
+    addTerminal(M, 'Cycle ' + str(sysData[M]['Experiment']['cycles']) + 'on %s Complete' % M)
 
     #Now we run this function again if the automated experiment is still going.
     if (sysData[M]['Experiment']['ON'] and sysData[M]['Experiment']['threadCount']==currentThread):
@@ -2249,17 +2268,8 @@ def runExperiment(M,placeholder):
         
     else: 
         turnEverythingOff(M)
-        addTerminal(M,'Experiment Stopped')
+        addTerminal(M, 'Experiment on %s Stopped' % M)
    
-
-def check_config_value(config_key, default_value, critical=False):
-    if config_key not in application.config.keys():
-        if critical:
-            raise ValueError('config value for %s was not found, it must be set for safe operations' % config_key)
-        application.config[config_key] = default_value
-        application.logger.warning('config value %s was not found and set to default: %d' % (config_key, default_value))
-    else:
-        application.logger.info('config found: %s=%s' % (config_key, application.config[config_key]))
 
 if __name__ == '__main__':
     initialiseAll()
