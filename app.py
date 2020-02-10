@@ -2101,7 +2101,7 @@ def runExperiment(M,placeholder):
     
     # We now measure OD N times and take the average to reduce noise when in auto mode!
     ODV = 0.0
-    for _ in range(0, application.config['NUMBER_OF_OD_MEASUREMENTS']-1):
+    for _ in range(0, application.config['NUMBER_OF_OD_MEASUREMENTS']):
         MeasureOD(M)
         ODV=ODV+sysData[M]['OD']['current']
         time.sleep(0.25)
