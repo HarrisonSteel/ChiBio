@@ -23,6 +23,7 @@ import collections
 
 
 application = Flask(__name__)
+application.config.from_pyfile('config/chibio_default.cfg', silent=True)
 application.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0 #Try this https://stackoverflow.com/questions/23112316/using-flask-how-do-i-modify-the-cache-control-header-for-all-output/23115561#23115561
 
 lock=Lock()
@@ -36,7 +37,7 @@ sysData = {'M0' : {
    'presentDevices' : { 'M0' : 0,'M1' : 0,'M2' : 0,'M3' : 0,'M4' : 0,'M5' : 0,'M6' : 0,'M7' : 0},
    'Version' : {'value' : 'Turbidostat V3.0'},
    'DeviceID' : '',
-   'DeviceName' : '',
+   'DeviceName': '',
    'time' : {'record' : []},
    'LEDA' : {'WL' : '395', 'default': 0.1, 'target' : 0.0, 'max': 1.0, 'min' : 0.0,'ON' : 0},
    'LEDB' : {'WL' : '457', 'default': 0.1, 'target' : 0.0, 'max': 1.0, 'min' : 0.0,'ON' : 0},
@@ -405,6 +406,11 @@ def initialiseAll():
     time.sleep(2.0) #This wait is to allow the watchdog circuit to boot.
     print(str(datetime.now()) + ' Initialising devices')
 
+    check_config_value(config_key='TWO_PUMPS_PER_DEVICE', default_value=False)
+    check_config_value(config_key='NUMBER_OF_OD_MEASUREMENTS', default_value=4)
+    check_config_value(config_key='DEVICE_COMM_FAILURE_THRESHOLD', default_value=10)
+
+
     for M in ['M0','M1','M2','M3','M4','M5','M6','M7']:
         initialise(M)
     scanDevices("all")
@@ -429,8 +435,12 @@ def turnEverythingOff(M):
     I2CCom(M,'DAC',0,8,int('00000000',2),int('00000000',2),0)#Sets all DAC Channels to zero!!! 
     setPWM(M,'PWM',sysItems['All'],0,0)
 
-    if int(M[1]) in [0, 1, 2 , 3]:
-        setPWM(M,'Pumps',sysItems['All'],0,0)
+    if application.config['TWO_PUMPS_PER_DEVICE']:
+        chibios_to_shut_down = [0, 1, 2, 3]
+    else:
+        chibios_to_shut_down = [0, 1, 2, 4, 5, 6, 7]
+    if int(M[1]) in chibios_to_shut_down:
+        setPWM(M=M, device='Pumps', channels=sysItems['All'], fraction=0, ConsecutiveFails=0)
     
     SetOutputOn(M,'Stir',0)
     SetOutputOn(M,'Thermostat',0)
@@ -609,12 +619,12 @@ def SetOutputOn(M,item,force):
     if (force==1):
         sysData[M][item]['ON']=1
         SetOutput(M,item)
-        return ('', 204)    
+        return ('', 204)
     
     elif(force==0):
         sysData[M][item]['ON']=0;
         SetOutput(M,item)
-        return ('', 204)    
+        return ('', 204)
     
     #Elsewise this is doing a flip operation (i.e. changes to opposite state to that which it is currently in)
     if (sysData[M][item]['ON']==0):
@@ -707,27 +717,25 @@ def PumpModulation(M,item):
     global sysItems
     global sysDevices
 
-    if int(M[1]) in [0, 1, 2 , 3]:
-        if item == 'Pump1' or item == 'Pump2':
-            MB = M
-            itemB = item
-        elif item == 'Pump3' or item == 'Pump4':
-            sysData[M][item]['ON'] = 0
-            return
+    if application.config['TWO_PUMPS_PER_DEVICE']:
+        pump_mapping = {'M4': 'M0', 'M5': 'M1', 'M6': 'M2', 'M7': 'M3'}
+        if int(M[1]) in [0, 1, 2, 3]:
+            if item == 'Pump1' or item == 'Pump2':
+                MB = M
+                itemB = item
+            elif item == 'Pump3' or item == 'Pump4':
+                sysData[M][item]['ON'] = 0
+                return
+        else:
+            if item == 'Pump1' or item == 'Pump2':
+                MB = pump_mapping[M]
+                itemB = 'Pump' + str(int(item[4])+2)
+            elif item == 'Pump3' or item == 'Pump4':
+                sysData[M][item]['ON'] = 0
+                return
     else:
-        if item == 'Pump1' or item == 'Pump2':
-            if int(M[1]) == 4:
-                MB = 'M0'
-            elif int(M[1]) == 5:
-                MB = 'M1'
-            elif int(M[1]) == 6:
-                MB = 'M2'
-            elif int(M[1]) == 7:
-                MB = 'M3'
-            itemB = 'Pump' + str(int(item[4])+2)
-        elif item == 'Pump3' or item == 'Pump4':
-            sysData[M][item]['ON'] = 0
-            return
+        MB = M
+        itemB = item
 
     sysDevices[M][item]['threadCount']=(sysDevices[M][item]['threadCount']+1)%100 #Index of the particular thread running.
     currentThread=sysDevices[M][item]['threadCount']
@@ -1383,7 +1391,7 @@ def I2CCom(M,device,rw,hl,data1,data2,SMBUSFLAG):
     
     global sysDevices
     if(sysData[M]['present']==0): #Something stupid has happened in software if this is the case!
-        print(str(datetime.now()) + ' Trying to communicate with M%s absent device - bug in software!. Disabling hardware and software!'%M)
+        print(str(datetime.now()) + ' Trying to communicate with M%s absent device - bug in software!. Disabling hardware and software!' % M)
         sysItems['Watchdog']['ON']=0 #Basically this will crash all the electronics and the software. 
         out=0
         tries=-1
@@ -1467,11 +1475,12 @@ def I2CCom(M,device,rw,hl,data1,data2,SMBUSFLAG):
             out=0
             sysData[M]['present']=0
             tries=-1
-        if tries>10: #In this case something else has gone wrong, so we panic.
+        if tries >= application.config['DEVICE_COMM_FAILURE_THRESHOLD']: #In this case something else has gone wrong, so we panic.
             sysItems['Watchdog']['ON']=0 #Basically this will crash all the electronics and the software. 
             out=0
             sysData[M]['present']=0
-            print('Failed to communicate to a device 10 times. Disabling hardware and software!')
+            print('Failed to communicate to a device %d times. Disabling hardware and software!' %
+                  application.config['DEVICE_COMM_FAILURE_THRESHOLD'])
             tries=-1
             os._exit(4)
                 
@@ -2136,14 +2145,14 @@ def runExperiment(M,placeholder):
         return
     
     sysData[M]['OD']['Measuring']=1 #Begin measuring - this flag is just to indicate that a measurement is currently being taken.
-    
-    #We now meausre OD 4 times and take the average to reduce noise when in auto mode!
-    ODV=0.0
-    for i in range(0,15):
+
+    # We now measure OD N times and take the average to reduce noise when in auto mode!
+    ODV = 0.0
+    for _ in range(0, application.config['NUMBER_OF_OD_MEASUREMENTS']):
         MeasureOD(M)
         ODV=ODV+sysData[M]['OD']['current']
         time.sleep(0.25)
-    sysData[M]['OD']['current']=ODV/15.0
+    sysData[M]['OD']['current'] = ODV/float(application.config['NUMBER_OF_OD_MEASUREMENTS'])
     
     MeasureTemp(M,'Internal') #Measuring all temperatures
     MeasureTemp(M,'External')
@@ -2258,7 +2267,14 @@ def runExperiment(M,placeholder):
         addTerminal(M,'Experiment Stopped')
    
 
-
+def check_config_value(config_key, default_value, critical=False):
+    if config_key not in application.config.keys():
+        if critical:
+            raise ValueError('config value for %s was not found, it must be set for safe operations' % config_key)
+        application.config[config_key] = default_value
+        application.logger.warning('config value %s was not found and set to default: %d' % (config_key, default_value))
+    else:
+        application.logger.info('config found: %s=%s' % (config_key, application.config[config_key]))
 
 if __name__ == '__main__':
     initialiseAll()
