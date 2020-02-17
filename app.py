@@ -320,7 +320,7 @@ def initialise(M):
     sysData[M]['Volume']['target']=20.0
     
     clearTerminal(M)
-    addTerminal(M,'System for %s Initialised' % M)
+    addTerminal(M,'System for %s (%s) Initialised' % (M, sysData[M]['DeviceID']))
   
     sysData[M]['Experiment']['ON']=0
     sysData[M]['Experiment']['cycles']=0
@@ -396,7 +396,7 @@ def initialise(M):
     scanDevices(M)
     if sysData[M]['present']==1:
         turnEverythingOff(M)
-        device_str = ' Initialised %s (%s) Device ID: %s' % (M, sysData[M]['DeviceName'], sysData[M]['DeviceID'])
+        device_str = ' Initialised %s Device name: %s Device ID: %s' % (M, sysData[M]['DeviceName'], sysData[M]['DeviceID'])
         print(str(datetime.now()) + device_str)
         application.logger.info(device_str)
 
@@ -593,7 +593,7 @@ def SetOutputTarget(M,item, value):
     M=str(M)
     if (M=="0"):
         M=sysItems['UIDevice']
-    info_msg = " Set item: %s to value %s on %s (%s)" % (str(item), str(value), M, + sysData[M]['DeviceID'])
+    info_msg = " Set item: %s to value %s on %s (%s)" % (str(item), str(value), M, sysData[M]['DeviceID'])
     print(str(datetime.now()) + info_msg)
     application.logger.info(info_msg)
     if (value<sysData[M][item]['min']):
@@ -618,9 +618,9 @@ def SetOutputOn(M,item,force):
     item = str(item)
     force = int(force)
     M=str(M)
-    application.logger.info('device: %s on %s (%s), output is  %s ' % (item, M, sysData[M]['DeviceID'], force))
     if (M=="0"):
         M=sysItems['UIDevice']
+    application.logger.info('device: %s on %s (%s), output is  %d ' % (item, M, sysData[M]['DeviceID'], force))
     #The first statements are to force it on or off it the command is called in force mode (force implies it sets it to a given state, regardless of what it is currently in)
     if (force==1):
         sysData[M][item]['ON']=1
@@ -1577,7 +1577,7 @@ def CalibrateOD(M,item,value,value2):
 
     
         sysData[M][item]['target']=OD0
-        info_msg = "Calibrated OD on %s %s"% (M, sysData[M]['DeviceID'])
+        info_msg = "Calibrated OD on %s (%s)" % (M, sysData[M]['DeviceID'])
         print(info_msg)
         application.logger.info(info_msg)
     elif (device=='LEDF'):
@@ -1608,7 +1608,7 @@ def CalibrateOD(M,item,value,value2):
             print('OD calibration value seems too high?!')
     
         sysData[M][item]['target']=OD0
-        info_msg = "Calibrated OD on %s %s"% (M, sysData[M]['DeviceID'])
+        info_msg = "Calibrated OD on %s (%s)" % (M, sysData[M]['DeviceID'])
         print(info_msg)
         application.logger.info(info_msg)
     elif (device=='LEDA'):
@@ -1639,7 +1639,7 @@ def CalibrateOD(M,item,value,value2):
             print('OD calibration value seems too high?!')
     
         sysData[M][item]['target']=OD0
-        info_msg = "Calibrated OD on %s %s"% (M, sysData[M]['DeviceID'])
+        info_msg = "Calibrated OD on %s (%s)" % (M, sysData[M]['DeviceID'])
         print(info_msg)
         application.logger.info(info_msg)
         
