@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
 
-        <title>Chi.Bio</title>
+        <title>{{ beaglebone_name }} - Chi.Bio</title>
 
  
  
@@ -40,7 +40,8 @@
 	<div id="titlesection"> <!-- We put this whole section inside a div so that if we have no internet connection (and the image fails to load) the TitleFailure function replaces the title. --> 
 	<div class="row">
     <div class="col">
-      
+      You are on: <b>{{ beaglebone_name }}</b><br>
+      Current exp. ID: <div style="display: inline" id="ExperimentID">0</div>
     </div>
     <div class="col-md-auto">
       <a href="https://chi.bio" target="_blank"><img  src="http://chi.bio/CBL.png" height="60px" style="padding-top: 5px;" onerror="TitleFailure()"></a>
@@ -135,8 +136,6 @@
             <div class="col-3 align-self-center">
              <b><font color="000000"> OD: </font></b> <br>
              <button id="ODMeasure">Measure</button>
-                <button id="ODSample">Sample OD</button>
-           
           </div>
           <div class="col-2 align-self-center">
               Current: <br>
@@ -1388,6 +1387,10 @@
 
 
 </div>
+
+    SpectrophotometerOD: <input id="SpectrophotometerOD" type="number" size="8" value=0 style="width: 6em"/>
+    <button id="ODSample">Sample OD</button>
+
 <button id="CharacteriseDevice">Characterise</button>
 
 <select id="CHProgram">
@@ -1914,7 +1917,7 @@ function TitleFailure() {
 <script>
     $(function() {
         $('#ODSample').click(function(){
-            var value = $('#OD0Actual').val();
+            var value = $('#SpectrophotometerOD').val();
             var targetURL = '/SampleOD/0/' + value;
             $.ajax({
                 type:'POST',

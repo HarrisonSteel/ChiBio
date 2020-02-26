@@ -72,7 +72,7 @@ sysData = {'M0' : {
    'UV' : {'WL' : 'UV', 'default': 0.5, 'target' : 0.0, 'max': 1.0, 'min' : 0.0,'ON' : 0},
    'Heat' : {'default': 0.0, 'target' : 0.0, 'max': 1.0, 'min' : 0.0,'ON' : 0,'record' : []},
    'Thermostat' : {'default': 37.0, 'target' : 0.0, 'max': 50.0, 'min' : 0.0,'ON' : 0,'record' : [],'cycleTime' : 30.0, 'Integral' : 0.0,'last' : -1},
-   'Experiment' : {'indicator' : 'USR0', 'startTime' : 'Waiting', 'startTimeRaw' : 0, 'ON' : 0,'cycles' : 0, 'cycleTime' : 180.0,'threadCount' : 0},
+   'Experiment' : {'indicator' : 'USR0', 'ExperimentID': '', 'startTime' : 'Waiting', 'startTimeRaw' : 0, 'ON' : 0,'cycles' : 0, 'cycleTime' : 180.0,'threadCount' : 0},
    'Terminal' : {'text' : ''},
    'AS7341' : {
         'spectrum' : {'nm410' : 0, 'nm440' : 0, 'nm470' : 0, 'nm510' : 0, 'nm550' : 0, 'nm583' : 0, 'nm620' : 0, 'nm670' : 0,'CLEAR' : 0, 'NIR' : 0,'DARK' : 0,'ExtGPIO' : 0, 'ExtINT' : 0, 'FLICKER' : 0},
@@ -436,6 +436,8 @@ def initialiseAll():
     check_config_value(config_key='TWO_PUMPS_PER_DEVICE', default_value=False)
     check_config_value(config_key='NUMBER_OF_OD_MEASUREMENTS', default_value=4)
     check_config_value(config_key='DEVICE_COMM_FAILURE_THRESHOLD', default_value=10)
+    check_config_value(config_key='DATA_DIR', default_value='data')
+    check_config_value(config_key='BEAGLEBONE_NAME', default_value='beaglebone')
 
 
     for M in ['M0','M1','M2','M3','M4','M5','M6','M7']:
@@ -489,6 +491,8 @@ def index():
     global sysItems
     
     outputdata=sysData[sysItems['UIDevice']]
+    # sending the current beaglebone's name to UI
+    outputdata['beaglebone_name'] = application.config['BEAGLEBONE_NAME']
     for M in ['M0','M1','M2','M3','M4','M5','M6','M7']:
             if sysData[M]['present']==1:
                 outputdata['presentDevices'][M]=1
@@ -1677,27 +1681,48 @@ def CalibrateOD(M,item,value,value2):
 
 @application.route("/SampleOD/<M>/<value>",methods=['POST'])
 def SampleOD(M, value):
+    """This function is called by ODSample button and gets its value from the SpectrophotometerOD field.
+
+    The input data is processed and a filename is created based on the input data (value), then a Thread is forked
+    to collect N number of OD readings defined by number_of_measurements.
+    """
     global sysData
     global sysItems
     M = str(M)
     OD0Actual = float(value)
     if M == "0":
         M = sysItems['UIDevice']
-    if OD0Actual != 0:
-        od_value = str(OD0Actual)
-        od_value = od_value.replace('.','_')
-    else:
-        od_value = ''
-    print('Current actual OD: %s'%od_value)
+
+    od_value = str(OD0Actual)
+    od_value = od_value.replace('.', '_')
+    print('Current actual OD: %s' % od_value)
     filename = 'OD_Sampels_%s_%s_%s.csv' % (M, od_value, sysData[M]['DeviceID'])
-    for idx in range(20):
-        out=GetTransmission(M, 'LASER650', ['CLEAR'], 1, 255)
-        print('%d: %f'%(idx, out[0]))
+    number_of_measurements = 200
+    application.logger.info('collecting %d OD measurements to characterize %s (%s)' %
+                            (number_of_measurements, M, sysData[M]['DeviceID']))
+    th = Thread(target=collect_od_samples, args=(filename, number_of_measurements, M))
+    th.setDaemon(True)
+    th.start()
+    return '', 204
+
+
+def collect_od_samples(filename, number_of_measurements, M):
+    """This function collects number_of_measurements OD readings through the LASER650 instrument and writes them into a
+    file named by filename.
+
+     Args:
+        filename (str): the name of the file where the measurements get written
+        number_of_measurements (int): the number of measurements that are collected
+        M (str): relative name of the chibio collecting the OD measurements
+    Returns:
+        None
+    """
+    for idx in range(number_of_measurements):
+        out = GetTransmission(M, 'LASER650', ['CLEAR'], 1, 255)
+        print('%s %d: %f' % (M, idx, out[0]))
         with open(filename, 'a') as f:
             f.write("%s\n" % float(out[0]))
         time.sleep(0.25)
-    return '', 204
-
 
 
 @application.route("/MeasureOD/<M>",methods=['POST'])
@@ -1933,8 +1958,8 @@ def csvData(M):
     if len(row) != len(fieldnames):
         raise ValueError('CSV_WRITER: mismatch between column num and header num')
 
-    filename = sysData[M]['Experiment']['startTime'] + '_' + M + '_data' + '.csv'
-    filename=filename.replace(":","_")
+    filename = '%s/%s_data.csv' \
+               % (application.config['DATA_DIR'], sysData[M]['Experiment']['experimentID'])
 
     lock.acquire() #We are avoiding writing to a file at the same time as we do digital communications, since it might potentially cause the computer to lag and consequently data transfer to fail.
     if os.path.isfile(filename) is False:
@@ -2179,12 +2204,19 @@ def ExperimentStartStop(M,value):
     if (value and (sysData[M]['Experiment']['ON']==0)):
         
         sysData[M]['Experiment']['ON']=1
-        addTerminal(M,'Experiment on %s Started' % M)
+        addTerminal(M, 'Experiment on %s (%s) Started' % (M, sysData[M]['DeviceID']))
         
         if (sysData[M]['Experiment']['cycles']==0):
             now=datetime.now()
             timeString=now.strftime("%Y-%m-%d %H:%M:%S")
             sysData[M]['Experiment']['startTime']=timeString
+            sysData[M]['Experiment']['experimentID'] = '%s_%s_%s_%s' % \
+                                                       (application.config['BEAGLEBONE_NAME'],
+                                                        sysData[M]['Experiment']['startTime'].replace(":","_"),
+                                                        M,
+                                                        sysData[M]['DeviceID'])
+            application.logger.info('Experiment ID: %s has been assign to %s (%s)' %
+                                    (sysData[M]['Experiment']['experimentID'], M, sysData[M]['DeviceID']))
             sysData[M]['Experiment']['startTimeRaw']=now
         
         sysData[M]['Pump1']['direction']=1.0 #Sets pumps to go forward.
@@ -2326,8 +2358,7 @@ def runExperiment(M,placeholder):
         TempStartTime=sysData[M]['Experiment']['startTimeRaw']
         sysData[M]['Experiment']['startTimeRaw']=0 #We had to set this to zero during the write operation since the system does not like writing data in such a format.
         
-        filename = '%s_%s_%s.txt' % (sysData[M]['Experiment']['startTime'], M, sysData[M]['DeviceID'])
-        filename=filename.replace(":","_")
+        filename = '%s/%s.txt' % (application.config['DATA_DIR'], sysData[M]['Experiment']['experimentID'])
         with open(filename,'w') as f:
             simplejson.dump(sysData[M], f)
         sysData[M]['Experiment']['startTimeRaw']=TempStartTime

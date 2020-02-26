@@ -68,6 +68,7 @@ function updateData(data){
         
          
         document.getElementById("StartTime").innerHTML = data.Experiment.startTime;
+        document.getElementById("ExperimentID").innerHTML = data.Experiment.ExperimentID;
         
         
         
