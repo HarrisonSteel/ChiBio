@@ -1,11 +1,5 @@
 # ChiBio
 ChiBio primary operating system.
-Version 1.0
+Version 1.1
 
-Readme coming soon...
-
-Description of current structure:
-
-Editing  / new functions:
-
-Debugging:
+For more information, and user guide, please see https://chi.bio/software/
