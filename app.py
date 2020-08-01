@@ -186,7 +186,10 @@ print(str(datetime.now()) + ' Starting watchdog')
 sysItems['Watchdog']['thread']=Thread(target = runWatchdog, args=())
 sysItems['Watchdog']['thread'].setDaemon(True)
 sysItems['Watchdog']['thread'].start(); 
-
+GPIO.setup('P8_15', GPIO.OUT)
+GPIO.output('P8_15', GPIO.HIGH)
+GPIO.setup('P8_17', GPIO.OUT)
+GPIO.output('P8_17', GPIO.HIGH)
 
 
 def initialise(M):
