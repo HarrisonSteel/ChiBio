@@ -25,8 +25,8 @@ pip3 install smbus2
 pip3 install numpy
 cd ~/../tmp
 pip download Adafruit_BBIO
-tar xvzf Adafruit_BBIO-1.1.1.tar.gz
-cd Adafruit_BBIO-1.1.1/
+tar xvzf Adafruit_BBIO-1.2.0.tar.gz
+cd Adafruit_BBIO-1.2.0/
 sed -i "s/'-Werror', //g" setup.py
 python setup.py install
 cd ~/../root/chibio
