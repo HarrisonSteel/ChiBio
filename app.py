@@ -1911,7 +1911,7 @@ def csvData(M):
                   'LED_500nm_setpoint','LED_523nm_setpoint','LED_595nm_setpoint','LED_623nm_setpoint',
                   'LED_6500K_setpoint','laser_setpoint','LED_UV_int','FP1_base','FP1_emit1','FP1_emit2','FP2_base',
                   'FP2_emit1','FP2_emit2','FP3_base','FP3_emit1','FP3_emit2','custom_prog_param1','custom_prog_param2',
-                  'custom_prog_param3','custom_prog_status','zigzag_target','growth_rate']
+                  'custom_prog_param3','custom_prog_status','zigzag_target','growth_rate','od_raw']
 
     row=[sysData[M]['time']['record'][-1],
         sysData[M]['OD']['record'][-1],
@@ -1946,6 +1946,7 @@ def csvData(M):
     row=row+[sysData[M]['Custom']['Status']*float(sysData[M]['Custom']['ON'])]
     row=row+[sysData[M]['Zigzag']['target']*float(sysData[M]['Zigzag']['ON'])]
     row=row+[sysData[M]['GrowthRate']['current']*sysData[M]['Zigzag']['ON']]
+    row=row+[sysData[M]['OD0']['raw']]
    
    
     #Following can be uncommented if you are recording ALL spectra for e.g. biofilm experiments
