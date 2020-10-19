@@ -1009,8 +1009,8 @@ def AS7341Read(M,Gain,ISteps,reset):
     sysData[M]['AS7341']['current']['ADC3']=int(bin(C3_H)[2:].zfill(8)+bin(C3_L)[2:].zfill(8),2)
     sysData[M]['AS7341']['current']['ADC4']=int(bin(C4_H)[2:].zfill(8)+bin(C4_L)[2:].zfill(8),2)
     sysData[M]['AS7341']['current']['ADC5']=int(bin(C5_H)[2:].zfill(8)+bin(C5_L)[2:].zfill(8),2)
-    
-    
+
+    # TODO ZAT this warning was moved to GetLight(), the one below can be removed in a future version.
     if (sysData[M]['AS7341']['current']['ADC0']==65535 or sysData[M]['AS7341']['current']['ADC1']==65535 or sysData[M]['AS7341']['current']['ADC2']==65535 or sysData[M]['AS7341']['current']['ADC3']==65535 or sysData[M]['AS7341']['current']['ADC4']==65535 or sysData[M]['AS7341']['current']['ADC5']==65535 ):
         info_msg = ' Spectrometer measurement was saturated on device %s (%s)' % (M, sysData[M]['DeviceID'])
         print(str(datetime.now()) + info_msg) #Not sure if this saturation check above actually works correctly...
@@ -1113,6 +1113,10 @@ def GetLight(M,wavelengths,Gain,ISteps):
     for wavelength in wavelengths:
         if wavelength != "OFF":
             output[index]=sysData[M]['AS7341']['current'][DACS[index]]
+            if output == 65535:
+                info_msg = ' Spectrometer at %s wavelength was saturated on device %s (%s)' % (wavelength, M, sysData[M]['DeviceID'])
+                print(str(datetime.now()) + info_msg)
+                application.logger.info(info_msg)
         index=index+1
 
     return output
