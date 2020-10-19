@@ -239,6 +239,8 @@ def initialise(M):
     sysData[M][FP]['Base']=0
     sysData[M][FP]['Emit1']=0
     sysData[M][FP]['Emit2']=0
+    sysData[M][FP]['Emit1_raw']=0
+    sysData[M][FP]['Emit2_raw']=0
     sysData[M][FP]['BaseBand']="CLEAR"
     sysData[M][FP]['Emit1Band']="nm510"
     sysData[M][FP]['Emit2Band']="nm550"
@@ -252,6 +254,8 @@ def initialise(M):
     sysData[M][FP]['Base']=0
     sysData[M][FP]['Emit1']=0
     sysData[M][FP]['Emit2']=0
+    sysData[M][FP]['Emit1_raw']=0
+    sysData[M][FP]['Emit2_raw']=0
     sysData[M][FP]['BaseBand']="CLEAR"
     sysData[M][FP]['Emit1Band']="nm583"
     sysData[M][FP]['Emit2Band']="nm620"
@@ -265,6 +269,8 @@ def initialise(M):
     sysData[M][FP]['Base']=0
     sysData[M][FP]['Emit1']=0
     sysData[M][FP]['Emit2']=0
+    sysData[M][FP]['Emit1_raw']=0
+    sysData[M][FP]['Emit2_raw']=0
     sysData[M][FP]['BaseBand']="CLEAR"
     sysData[M][FP]['Emit1Band']="nm620"
     sysData[M][FP]['Emit2Band']="nm670"
@@ -1821,6 +1827,10 @@ def MeasureFP(M):
                 sysData[M][FP]['Emit1']=float(out[1]) 
                 sysData[M][FP]['Emit2']=float(out[2])
 
+            # saving the unnormalized emissions
+            sysData[M][FP]['Emit1_raw'] = float(out[1])
+            sysData[M][FP]['Emit2_raw'] = float(out[2])
+
     return ('', 204)      
     
 
@@ -1913,8 +1923,9 @@ def csvData(M):
                   'internal_air_temp','external_air_temp','media_temp','opt_gen_act_int','pump_1_rate','pump_2_rate',
                   'pump_3_rate','pump_4_rate','media_vol','stirring_rate','LED_395nm_setpoint','LED_457nm_setpoint',
                   'LED_500nm_setpoint','LED_523nm_setpoint','LED_595nm_setpoint','LED_623nm_setpoint',
-                  'LED_6500K_setpoint','laser_setpoint','LED_UV_int','FP1_base','FP1_emit1','FP1_emit2','FP2_base',
-                  'FP2_emit1','FP2_emit2','FP3_base','FP3_emit1','FP3_emit2','custom_prog_param1','custom_prog_param2',
+                  'LED_6500K_setpoint','laser_setpoint','LED_UV_int','FP1_base','FP1_emit1','FP1_emit2','FP1_emit1_raw',
+                  'FP1_emit2_raw','FP2_base','FP2_emit1','FP2_emit2','FP2_emit1_raw','FP2_emit2_raw','FP3_base',
+                  'FP3_emit1','FP3_emit2','FP3_emit1_raw','FP3_emit2_raw','custom_prog_param1','custom_prog_param2',
                   'custom_prog_param3','custom_prog_status','zigzag_target','growth_rate','od_raw']
 
     row=[sysData[M]['time']['record'][-1],
@@ -1941,8 +1952,10 @@ def csvData(M):
             row=row+[sysData[M][FP]['Base']]
             row=row+[sysData[M][FP]['Emit1']]
             row=row+[sysData[M][FP]['Emit2']]
+            row=row+[sysData[M][FP]['Emit1_raw']]
+            row=row+[sysData[M][FP]['Emit2_raw']]
         else:
-            row=row+([0.0, 0.0, 0.0])
+            row=row+([0.0, 0.0, 0.0, 0.0, 0.0])
     
     row=row+[sysData[M]['Custom']['param1']*float(sysData[M]['Custom']['ON'])]
     row=row+[sysData[M]['Custom']['param2']*float(sysData[M]['Custom']['ON'])]
