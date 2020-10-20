@@ -1369,16 +1369,16 @@ def I2CCom(M,device,rw,hl,data1,data2,SMBUSFLAG):
             if (tries>2):
                 try:
                     sysItems['Multiplexer']['device'].write8(int(0x00),int(0x00)) #Disconnect multiplexer. 
-                    print('Disconnected multiplexer on ' + str(M) + ', trying to connect again.')
+                    print(str(datetime.now()) + 'Disconnected multiplexer on ' + str(M) + ', trying to connect again.')
                 except:
-                    print('Failed to recover multiplexer on device ' + str(M))
+                    print(str(datetime.now()) + 'Failed to recover multiplexer on device ' + str(M))
             if tries==5:
                 time.sleep(0.2)
                 
         if tries>20: #If it has failed a number of times then likely something is seriously wrong, so we crash the software.
             sysItems['Watchdog']['ON']=0 #Basically this will crash all the electronics and the software. 
             out=0
-            print('Failed to communicate to Multiplexer 10 times. Disabling hardware and software!')
+            print(str(datetime.now()) + 'Failed to communicate to Multiplexer 10 times. Disabling hardware and software!')
             tries=-1
             os._exit(4)
     
@@ -1427,7 +1427,7 @@ def I2CCom(M,device,rw,hl,data1,data2,SMBUSFLAG):
             sysItems['Watchdog']['ON']=0 #Basically this will crash all the electronics and the software. 
             out=0
             sysData[M]['present']=0
-            print('Failed to communicate to a device 10 times. Disabling hardware and software!')
+            print(str(datetime.now()) + 'Failed to communicate to a device 10 times. Disabling hardware and software!')
             tries=-1
             os._exit(4)
                 
@@ -1438,7 +1438,7 @@ def I2CCom(M,device,rw,hl,data1,data2,SMBUSFLAG):
     try:
         sysItems['Multiplexer']['device'].write8(int(0x00),int(0x00)) #Disconnect multiplexer with each iteration. 
     except:
-        print('Failed to disconnect multiplexer on device ' + str(M))
+        print(str(datetime.now()) + 'Failed to disconnect multiplexer on device ' + str(M))
 
 
     
@@ -1466,21 +1466,21 @@ def CalibrateOD(M,item,value,value2):
         b=sysData[M]['OD0']['LASERb'] 
         if (ODActual<0):
             ODActual=0
-            print("You put a negative OD into calibration! Setting it to 0")
+            print(str(datetime.now()) + "You put a negative OD into calibration! Setting it to 0")
         
         raw=((ODActual/a +  (b/(2*a))**2)**0.5) - (b/(2*a)) #THis is performing the inverse function of the quadratic OD calibration.
         OD0=(10.0**raw)*ODRaw
         if (OD0<sysData[M][item]['min']):
             OD0=sysData[M][item]['min']
-            print('OD calibration value seems too low?!')
+            print(str(datetime.now()) + 'OD calibration value seems too low?!')
 
         if (OD0>sysData[M][item]['max']):
             OD0=sysData[M][item]['max']
-            print('OD calibration value seems too high?!')
+            print(str(datetime.now()) + 'OD calibration value seems too high?!')
 
     
         sysData[M][item]['target']=OD0
-        print("Calibrated OD")
+        print(str(datetime.now()) + "Calibrated OD")
     elif (device=='LEDF'):
         a=sysData[M]['OD0']['LEDFa']#Retrieve the calibration factors for OD.
         
@@ -1696,7 +1696,7 @@ def setPWM(M,device,channels,fraction,ConsecutiveFails):
         print(str(datetime.now()) + ' Failed transmission test on ' + str(device) + ' ' + str(ConsecutiveFails) + ' times consecutively on device '  + str(M) )
         if ConsecutiveFails>10:
             sysItems['Watchdog']['ON']=0 #Basically this will crash all the electronics and the software. 
-            print('Failed to communicate to PWM 10 times. Disabling hardware and software!')
+            print(str(datetime.now()) + 'Failed to communicate to PWM 10 times. Disabling hardware and software!')
             os._exit(4)
         else:
             time.sleep(0.1)
