@@ -1667,6 +1667,7 @@ def MeasureTemp(M,which):
 def setPWM(M,device,channels,fraction,ConsecutiveFails):
     #Sets up the PWM chip (either the one in the reactor or on the pump board)
     global sysItems
+    global sysDevices
     
     if sysDevices[M][device]['startup']==0: #The following boots up the respective PWM device to the correct frequency. Potentially there is a bug here; if the device loses power after this code is run for the first time it may revert to default PWM frequency.
         I2CCom(M,device,0,8,0x00,0x11,0) #Turns off device.
