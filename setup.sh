@@ -14,7 +14,6 @@ cp cb.sh ~/chibio
 cp app.py ~/chibio
 cp static -r ~/chibio
 cp templates -r ~/chibio
-sudo apt --assume-yes install python-pip
 pip3 install Gunicorn
 pip3 install flask
 pip3 install serial
@@ -23,8 +22,7 @@ pip3 install --user --upgrade setuptools
 pip3 install simplejson
 pip3 install smbus2
 pip3 install numpy
-cd ~/../tmp
-pip download Adafruit_BBIO
+cd ~/../home/debian
 tar xvzf Adafruit_BBIO-1.2.0.tar.gz
 cd Adafruit_BBIO-1.2.0/
 sed -i "s/'-Werror', //g" setup.py
