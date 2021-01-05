@@ -1982,7 +1982,7 @@ def Zigzag(M):
     #Subsequent section is for growth estimation.
 	
     TimeSinceSwitch=iteration-sysData[M]['Zigzag']['SwitchPoint']
-    if (iteration>6 and TimeSinceSwitch>5): #The reason we wait a few minutes after starting growth is that new media may still be introduced, it takes a while for the growth to get going.
+    if (iteration>6 and TimeSinceSwitch>5 and current > 0 and last > 0): #The reason we wait a few minutes after starting growth is that new media may still be introduced, it takes a while for the growth to get going.
         dGrowthRate=(math.log(current)-math.log(last))*60.0 #Converting to units of 1/hour
         sysData[M]['GrowthRate']['current']=sysData[M]['GrowthRate']['current']*0.95 + dGrowthRate*0.05 #We are essentially implementing an online growth rate estimator with learning rate 0.05
 
