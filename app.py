@@ -332,6 +332,7 @@ def initialise(M):
     sysData[M]['Experiment']['ON']=0
     sysData[M]['Experiment']['cycles']=0
     sysData[M]['Experiment']['threadCount']=0
+    sysData[M]['Experiment']['experimentID'] = None
     sysData[M]['Experiment']['startTime']=' Waiting '
     sysData[M]['Experiment']['startTimeRaw']=0
     sysData[M]['OD']['ON']=0
