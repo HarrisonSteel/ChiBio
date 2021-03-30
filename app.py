@@ -1688,27 +1688,27 @@ def setPWM(M,device,channels,fraction,ConsecutiveFails):
     I2CCom(M,device,0,8,channels['OFFH'],int(HighVals,2),0)
     
     if (device=='Pumps'):
-	I2CCom(M,device,0,8,channels['ONL'],0x00,0)
+		I2CCom(M,device,0,8,channels['ONL'],0x00,0)
     	I2CCom(M,device,0,8,channels['ONH'],0x00,0)
-	I2CCom(M,device,0,8,channels['OFFL'],int(LowVals,2),0)
+		I2CCom(M,device,0,8,channels['OFFL'],int(LowVals,2),0)
     	I2CCom(M,device,0,8,channels['OFFH'],int(HighVals,2),0)
     else:
     	CheckLow=I2CCom(M,device,1,8,channels['OFFL'],-1,0)
-	CheckHigh=I2CCom(M,device,1,8,channels['OFFH'],-1,0)
+		CheckHigh=I2CCom(M,device,1,8,channels['OFFH'],-1,0)
     	CheckLowON=I2CCom(M,device,1,8,channels['ONL'],-1,0)
     	CheckHighON=I2CCom(M,device,1,8,channels['ONH'],-1,0)
     
     	if(CheckLow!=(int(LowVals,2)) or CheckHigh!=(int(HighVals,2)) or CheckHighON!=int(0x00) or CheckLowON!=int(0x00)): #We check to make sure it has been set to appropriate values.
-            ConsecutiveFails=ConsecutiveFails+1
-       	    print(str(datetime.now()) + ' Failed transmission test on ' + str(device) + ' ' + str(ConsecutiveFails) + ' times consecutively on device '  + str(M) )
-            if ConsecutiveFails>10:
-                sysItems['Watchdog']['ON']=0 #Basically this will crash all the electronics and the software. 
-                print(str(datetime.now()) + 'Failed to communicate to PWM 10 times. Disabling hardware and software!')
-                os._exit(4)
-            else:
-                time.sleep(0.1)
-                sysItems['FailCount']=sysItems['FailCount']+1
-                setPWM(M,device,channels,fraction,ConsecutiveFails)
+    		ConsecutiveFails=ConsecutiveFails+1
+    		print(str(datetime.now()) + ' Failed transmission test on ' + str(device) + ' ' + str(ConsecutiveFails) + ' times consecutively on device '  + str(M) )
+    		if ConsecutiveFails>10:
+			    sysItems['Watchdog']['ON']=0 #Basically this will crash all the electronics and the software. 
+    			print(str(datetime.now()) + 'Failed to communicate to PWM 10 times. Disabling hardware and software!')
+    			os._exit(4)
+    		else:
+    			time.sleep(0.1)
+    			sysItems['FailCount']=sysItems['FailCount']+1
+    			setPWM(M,device,channels,fraction,ConsecutiveFails)
     
 
 
