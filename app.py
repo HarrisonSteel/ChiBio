@@ -1673,7 +1673,8 @@ def setPWM(M,device,channels,fraction,ConsecutiveFails):
         I2CCom(M,device,0,8,0x00,0x11,0) #Turns off device.
         I2CCom(M,device,0,8,0xfe,sysDevices[M][device]['frequency'],0) #Sets frequency of PWM oscillator. 
         sysDevices[M][device]['startup']=1
-    I2CCom(M,device,0,8,0x00,0x01,0) #Turns device on for sure! 
+        I2CCom(M,device,0,8,0x00,0x01,0) #Turns device on 
+    
         
     
     timeOn=int(fraction*4095.99)
