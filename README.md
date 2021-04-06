@@ -1,5 +1,7 @@
 # ChiBio
 Chi.Bio operating system.
-Version 1.1
+Version 2.0
 
-For more information, and user guide, please see https://chi.bio/software/
+Note that from 06-04-2021 installation should follow V2.0 of the software guide, as the operating system now includes adjustments to the base Linux Kernel.
+
+For more information, and software setup guide, please see https://chi.bio/software/
