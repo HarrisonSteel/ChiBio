@@ -1882,8 +1882,8 @@ def RegulateOD(M):
     if sysData[M]['Experiment']['cycles']<3:
         Pump1=0 #In first few cycles we do precisely no pumping.
     elif len(sysData[M]['time']['record']) < 2:
-	Pump1=0 #In first few cycles we do precisely no pumping.
-    	addTerminal(M, "Warning: Tried to calculate time elapsed with fewer than two " +\
+        Pump1=0 #In first few cycles we do precisely no pumping.
+        addTerminal(M, "Warning: Tried to calculate time elapsed with fewer than two " +\
     				"timepoints recorded. If you see this message a lot, there may be " +\
     				"a more serious problem.")
     else:
