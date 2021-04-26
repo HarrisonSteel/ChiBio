@@ -1882,6 +1882,7 @@ def RegulateOD(M):
     if sysData[M]['Experiment']['cycles']<3:
         Pump1=0 #In first few cycles we do precisely no pumping.
     elif len(sysData[M]['time']['record']) < 2:
+	Pump1=0 #In first few cycles we do precisely no pumping.
     	addTerminal(M, "Warning: Tried to calculate time elapsed with fewer than two " +\
     				"timepoints recorded. If you see this message a lot, there may be " +\
     				"a more serious problem.")
@@ -2094,7 +2095,12 @@ def runExperiment(M,placeholder):
     MeasureTemp(M,'External')
     MeasureTemp(M,'IR')
     MeasureFP(M) #And now fluorescent protein concentrations. 
-    
+	
+    if (sysData[M]['Experiment']['ON']==0): #We do another check post-measurement to see whether we need to end the experiment.
+        turnEverythingOff(M)
+        sysData[M]['Experiment']['cycles']=sysData[M]['Experiment']['cycles']-1 # Cycle didn't finish, don't count it.
+        addTerminal(M,'Experiment Stopped')
+        return
     #Temporary Biofilm Section - the below makes the device all spectral data for all LEDs each cycle.
     
     # bands=['nm410' ,'nm440','nm470','nm510','nm550','nm583','nm620','nm670','CLEAR','NIR']    
