@@ -1881,6 +1881,10 @@ def RegulateOD(M):
 
     if sysData[M]['Experiment']['cycles']<3:
         Pump1=0 #In first few cycles we do precisely no pumping.
+    elif len(sysData[M]['time']['record']) < 2:
+    	addTerminal(M, "Warning: Tried to calculate time elapsed with fewer than two " +\
+    				"timepoints recorded. If you see this message a lot, there may be " +\
+    				"a more serious problem.")
     else:
         ODPast=sysData[M]['OD']['record'][-1]
         timeElapsed=((sysData[M]['time']['record'][-1])-(sysData[M]['time']['record'][-2]))/60.0 #Amount of time betwix measurements in minutes
@@ -2072,6 +2076,7 @@ def runExperiment(M,placeholder):
     time.sleep(5.0) #Wait for liquid to settle.
     if (sysData[M]['Experiment']['ON']==0):
         turnEverythingOff(M)
+        sysData[M]['Experiment']['cycles']=sysData[M]['Experiment']['cycles']-1 # Cycle didn't finish, don't count it.
         addTerminal(M,'Experiment Stopped')
         return
     
