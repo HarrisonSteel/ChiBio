@@ -897,14 +897,9 @@
             <div class="col-3 align-self-center">
              <b><font color="000000"> Program</font></b><br>
         <select id="CustomProgram1">
-                       <option value="C1">C1</option>
-                       <option value="C2">C2</option>
-                       <option value="C3">C3</option>
-                       <option value="C4">C4</option>
-                       <option value="C5">C5</option>
-                       <option value="C6">C6</option>
-                       <option value="C7">C7</option>
-                       <option value="C8">C8</option>
+                        {% for progname in customprogs.customprog %}
+                       <option value="{{progname}}">{{progname}}</option>
+                        {% endfor %}
              </select>
           </div>
           <div class="col-2 align-self-center">

@@ -10,14 +10,21 @@ from threading import Thread, Lock
 import threading
 import numpy as np
 from datetime import datetime, date
-import Adafruit_GPIO.I2C as I2C
-import Adafruit_BBIO.GPIO as GPIO
 import time
 import serial
 import simplejson
 import copy
 import csv
-import smbus2 as smbus
+import importlib
+
+try:
+    import Adafruit_GPIO.I2C as I2C
+    import Adafruit_BBIO.GPIO as GPIO
+    import smbus2 as smbus
+    usecomms = True
+except ModuleNotFoundError:
+    usecomms = False
+    print("communication libraries failed! Running in dumb mode")
 
 
 application = Flask(__name__)
@@ -171,25 +178,29 @@ sysItems = {
 def runWatchdog():  
     #Watchdog toggling function which continually runs in a thread.
     global sysItems;
+    global usecomms;
     if (sysItems['Watchdog']['ON']==1):
         sysItems['Watchdog']['thread']
-        GPIO.output(sysItems['Watchdog']['pin'], GPIO.HIGH)
+        if(usecomms):
+            GPIO.output(sysItems['Watchdog']['pin'], GPIO.HIGH)
         time.sleep(0.1)
-        GPIO.output(sysItems['Watchdog']['pin'], GPIO.LOW)
+        if(usecomms):
+            GPIO.output(sysItems['Watchdog']['pin'], GPIO.LOW)
         time.sleep(0.4)
         sysItems['Watchdog']['thread']=Thread(target = runWatchdog, args=())
         sysItems['Watchdog']['thread'].setDaemon(True)
         sysItems['Watchdog']['thread'].start();
-
-GPIO.setup(sysItems['Watchdog']['pin'], GPIO.OUT)
+if(usecomms):
+    GPIO.setup(sysItems['Watchdog']['pin'], GPIO.OUT)
 print(str(datetime.now()) + ' Starting watchdog')
 sysItems['Watchdog']['thread']=Thread(target = runWatchdog, args=())
 sysItems['Watchdog']['thread'].setDaemon(True)
 sysItems['Watchdog']['thread'].start(); 
-GPIO.setup('P8_15', GPIO.OUT)
-GPIO.output('P8_15', GPIO.HIGH)
-GPIO.setup('P8_17', GPIO.OUT)
-GPIO.output('P8_17', GPIO.HIGH)
+if(usecomms):
+    GPIO.setup('P8_15', GPIO.OUT)
+    GPIO.output('P8_15', GPIO.HIGH)
+    GPIO.setup('P8_17', GPIO.OUT)
+    GPIO.output('P8_17', GPIO.HIGH)
 
 
 def initialise(M):
@@ -198,6 +209,7 @@ def initialise(M):
     global sysData;
     global sysItems;
     global sysDevices
+    global usecomms
 
     for LED in ['LEDA','LEDB','LEDC','LEDD','LEDE','LEDF','LEDG']:
         sysData[M][LED]['target']=sysData[M][LED]['default']
@@ -342,19 +354,32 @@ def initialise(M):
     sysData[M]['Thermostat']['record']=[]
 	
     sysData[M]['GrowthRate']['record']=[]
-
-    sysDevices[M]['ThermometerInternal']['device']=I2C.get_i2c_device(0x18,2) #Get Thermometer on Bus 2!!!
-    sysDevices[M]['ThermometerExternal']['device']=I2C.get_i2c_device(0x1b,2) #Get Thermometer on Bus 2!!!
-    sysDevices[M]['DAC']['device']=I2C.get_i2c_device(0x48,2) #Get DAC on Bus 2!!!
-    sysDevices[M]['AS7341']['device']=I2C.get_i2c_device(0x39,2) #Get OD Chip on Bus 2!!!!!
-    sysDevices[M]['Pumps']['device']=I2C.get_i2c_device(0x61,2) #Get OD Chip on Bus 2!!!!!
+    if(usecomms):
+        #i2c addresses contained here!!!
+        sysDevices[M]['ThermometerInternal']['device']=I2C.get_i2c_device(0x18,2) #Get Thermometer on Bus 2!!!
+        sysDevices[M]['ThermometerExternal']['device']=I2C.get_i2c_device(0x1b,2) #Get Thermometer on Bus 2!!!
+        sysDevices[M]['DAC']['device']=I2C.get_i2c_device(0x48,2) #Get DAC on Bus 2!!!
+        sysDevices[M]['AS7341']['device']=I2C.get_i2c_device(0x39,2) #Get OD Chip on Bus 2!!!!!
+        sysDevices[M]['Pumps']['device']=I2C.get_i2c_device(0x61,2) #Get OD Chip on Bus 2!!!!!
+    else:
+        sysDevices[M]['ThermometerInternal']['device']=None #No device if we can't talk
+        sysDevices[M]['ThermometerExternal']['device']=None #No device if we can't talk
+        sysDevices[M]['DAC']['device']=None #No device if we can't talk
+        sysDevices[M]['AS7341']['device']=None #No device if we can't talk
+        sysDevices[M]['Pumps']['device']=None #No device if we can't talk
     sysDevices[M]['Pumps']['startup']=0
     sysDevices[M]['Pumps']['frequency']=0x1e #200Hz PWM frequency
-    sysDevices[M]['PWM']['device']=I2C.get_i2c_device(0x60,2) #Get OD Chip on Bus 2!!!!!
+    if(usecomms):
+        sysDevices[M]['PWM']['device']=I2C.get_i2c_device(0x60,2) #Get OD Chip on Bus 2!!!!!
+    else:
+        sysDevices[M]['PWM']['device']=None #No device if we can't talk
     sysDevices[M]['PWM']['startup']=0
     sysDevices[M]['PWM']['frequency']=0x03# 0x14 = 300hz, 0x03 is 1526 Hz PWM frequency for fan/LEDs, maximum possible. Potentially dial this down if you are getting audible ringing in the device! 
     #There is a tradeoff between large frequencies which can make capacitors in the 6V power regulation oscillate audibly, and small frequencies which result in the number of LED "ON" cycles varying during measurements.
-    sysDevices[M]['ThermometerIR']['device']=smbus.SMBus(bus=2) #Set up SMBus thermometer
+    if(usecomms):
+        sysDevices[M]['ThermometerIR']['device']=smbus.SMBus(bus=2) #Set up SMBus thermometer
+    else:
+        sysDevices[M]['ThermometerIR']['device']=None #no device if we can't talk
     sysDevices[M]['ThermometerIR']['address']=0x5a 
     
     
@@ -380,7 +405,9 @@ def initialise(M):
 
 def initialiseAll():
     # Initialisation function which runs at when software is started for the first time.
-    sysItems['Multiplexer']['device']=I2C.get_i2c_device(0x74,2) 
+    global usecomms
+    if(usecomms):
+        sysItems['Multiplexer']['device']=I2C.get_i2c_device(0x74,2) 
     sysItems['FailCount']=0
     time.sleep(2.0) #This wait is to allow the watchdog circuit to boot.
     print(str(datetime.now()) + ' Initialising devices')
@@ -420,7 +447,20 @@ def turnEverythingOff(M):
     SetOutputOn(M,'Pump4',0)
     
 
-
+def findFiles(directory,firstlinecontains="##CHI_BIO_PROGRAM",extension="py"):
+    walkr = os.walk(directory)
+    dirlist = [a for a in walkr]
+    files = []
+    folder = ['.']
+    for fle in dirlist[0][2]:
+        if(fle.split(".")[-1]==extension):
+            try:
+                fline = open(os.path.join(folder[0],fle),'r').readline()
+                if(firstlinecontains in fline):
+                    files+=[(os.path.join(folder[0],fle),''.join(fle.split('.')[:-1]))]
+            except IOError:
+                pass
+    return sorted(files)[::-1]
  
 
 @application.route('/')
@@ -435,6 +475,11 @@ def index():
                 outputdata['presentDevices'][M]=1
             else:
                 outputdata['presentDevices'][M]=0
+    customfiles = findFiles(".")
+    fpaths = [a[0] for a in customfiles]
+    prognames = [a[1] for a in customfiles]
+    sysData["CustomPrograms"]={a:b for a,b in zip(prognames,fpaths)}
+    outputdata["customprogs"] = {"fpath":fpaths,"customprog":prognames}
     return render_template('index.html',**outputdata)
     
 @application.route('/getSysdata/')
@@ -1050,58 +1095,52 @@ def SetCustom(Program,Status):
         sysData[M][item]['param3']=0.0
     return('',204)
 		
-        
+
+
+class funcapi:
+    def __init__(self):
+        pass
+    def SetOutputTarget(self,M,item,value):
+        return SetOutputTarget(M,item,value)
+    def SetOutputOn(self,M,item,force):
+        return SetOutputOn(M,item,force)
+    def addTerminal(self,M,strIn):
+        return addTerminal(M,strIn)
+    def CustomLEDCycle(self,M,LED,Value):
+        return CustomLEDCycle(M,LED,Value)
+    def SetLightActuation(self,Excite):
+        return SetLightActuation(Excite)
+    def MeasureOD(self,M):
+        return MeasureOD(M)
+    def MeasureTemp(self,M,which):
+        return MeasureTemp(M,which)
+    def GetSpectrum(self,M,Gain):
+        return GetSpectrum(M,Gain)
+    def direction(self,M,item):
+        return direction(M,item)
+    def SetFPMeasurement(self,item,Excite,Base,Emit1,Emit2,Gain):
+        return SetFPMeasurement(item,Excite,Base,Emit1,Emit2,Gain)
 def CustomProgram(M):
     #Runs a custom program, some examples are included. You can remove/edit this function as you see fit.
     #Note that the custom programs (as set up at present) use an external .csv file with input parameters. THis is done to allow these parameters to easily be varied on the fly. 
     global sysData
     M=str(M)
     program=sysData[M]['Custom']['Program']
+    programpath = sysData["CustomPrograms"][program]
     #Subsequent few lines reads in external parameters from a file if you are using any.
     fname='InputParameters_' + str(M)+'.csv'
-	
-    with open(fname, 'rb') as f:
-        reader = csv.reader(f)
-        listin = list(reader)
-    Params=listin[0]
+    loader = importlib.machinery.SourceFileLoader(program, programpath)
+    customprog = loader.load_module()
+    #with open(fname, 'rb') as f:
+    #    reader = csv.reader(f)
+    #    listin = list(reader)
+    #Params=listin[0]
     addTerminal(M,'Running Program = ' + str(program) + ' on device ' + str(M))
-	
-	
-    if (program=="C1"): #Optogenetic Integral Control Program
-        integral=0.0 #Integral in integral controller
-        green=0.0 #Intensity of Green actuation 
-        red=0.0 #Intensity of red actuation.
-        GFPNow=sysData[M]['FP1']['Emit1']
-        GFPTarget=sysData[M]['Custom']['Status'] #This is the controller setpoint.
-        error=GFPTarget-GFPNow
-        if error>0.0075:
-            green=1.0
-            red=0.0
-            sysData[M]['Custom']['param3']=0.0 
-        elif error<-0.0075:
-            green=0.0
-            red=1.0
-            sysData[M]['Custom']['param3']=0.0
-        else:
-            red=1.0
-            balance=float(Params[0]) #our guess at green light level to get 50% expression.
-            KI=float(Params[1])
-            KP=float(Params[2])
-            integral=sysData[M]['Custom']['param3']+error*KI
-            green=balance+KP*error+integral
-            sysData[M]['Custom']['param3']=integral
-        
 
-        GreenThread=Thread(target = CustomLEDCycle, args=(M,'LEDD',green))
-        GreenThread.setDaemon(True)
-        GreenThread.start();
-        RedThread=Thread(target = CustomLEDCycle, args=(M,'LEDF',red))
-        RedThread.setDaemon(True)
-        RedThread.start();
-        sysData[M]['Custom']['param1']=green
-        sysData[M]['Custom']['param2']=red
-        addTerminal(M,'Program = ' + str(program) + ' green= ' + str(green)+ ' red= ' + str(red) + ' integral= ' + str(integral))
-	
+    customprog.main(M,sysData,funcapi())
+    return
+    if (program=="C1"): #Optogenetic Integral Control Program
+        pass
     elif (program=="C2"): #UV Integral Control Program
         integral=0.0 #Integral in integral controller
         UV=0.0 #Intensity of Green actuation 
@@ -1325,6 +1364,9 @@ def CharacteriseDevice2(M):
         
 
 def I2CCom(M,device,rw,hl,data1,data2,SMBUSFLAG):
+    if(not usecomms):
+        #if comms aren't enabled, none of this will work!
+        return
     #Function used to manage I2C bus communications for ALL devices.
     M=str(M) #Turbidostat to write to
     device=str(device) #Name of device to be written to
@@ -1362,7 +1404,8 @@ def I2CCom(M,device,rw,hl,data1,data2,SMBUSFLAG):
                 tries=tries+1
                 time.sleep(0.02)
                 print(str(datetime.now()) + ' Multiplexer didnt switch ' + str(tries) + " times on " + str(M))
-        except: #If there is an error in the above.
+        except Exception as err: #If there is an error in the above.
+            print("While attempting to connect multiplexer, hit exception: " + str(err)) #If there is an error in the above.
             tries=tries+1
             time.sleep(0.02)
             print(str(datetime.now()) + ' Failed Multiplexer Comms ' + str(tries) + " times")
@@ -1437,7 +1480,8 @@ def I2CCom(M,device,rw,hl,data1,data2,SMBUSFLAG):
     
     try:
         sysItems['Multiplexer']['device'].write8(int(0x00),int(0x00)) #Disconnect multiplexer with each iteration. 
-    except:
+    except Exception as err: #If there is an error in the above.
+        print("While attempting to disconnect multiplexer, hit exception: " + str(err))
         print(str(datetime.now()) + 'Failed to disconnect multiplexer on device ' + str(M))
 
 
@@ -1640,18 +1684,24 @@ def MeasureTemp(M,which):
     #Used to measure temperature from each thermometer.
     global sysData
     global sysItems
-   
+    global usecomms
     if (M=="0"):
         M=sysItems['UIDevice']
     M=str(M)
     which='Thermometer' + str(which)
     if (which=='ThermometerInternal' or which=='ThermometerExternal'):
-        getData=I2CCom(M,which,1,16,0x05,0,0)
+        if(usecomms):
+            getData=I2CCom(M,which,1,16,0x05,0,0)
+        else:
+            getData = 90
         getDataBinary=bin(getData)
         tempData=getDataBinary[6:]
         temperature=float(int(tempData,2))/16.0
     elif(which=='ThermometerIR'):
-        getData=I2CCom(M,which,1,0,0x07,0,1)
+        if(usecomms):
+            getData=I2CCom(M,which,1,0,0x07,0,1)
+        else:
+            getData=90
         temperature = (getData*0.02) - 273.15
 
     if sysData[M]['present']==0:
@@ -1700,6 +1750,10 @@ def setPWM(M,device,channels,fraction,ConsecutiveFails):
         CheckHighON=I2CCom(M,device,1,8,channels['ONH'],-1,0)
     
         if(CheckLow!=(int(LowVals,2)) or CheckHigh!=(int(HighVals,2)) or CheckHighON!=int(0x00) or CheckLowON!=int(0x00)): #We check to make sure it has been set to appropriate values.
+            if(not usecomms):
+                #in this case this check will never succeed because we can't talk, so just forget about it
+                return
+
             ConsecutiveFails=ConsecutiveFails+1
             print(str(datetime.now()) + ' Failed transmission test on ' + str(device) + ' ' + str(ConsecutiveFails) + ' times consecutively on device '  + str(M) )
             if ConsecutiveFails>10:
