@@ -1404,7 +1404,8 @@ def I2CCom(M,device,rw,hl,data1,data2,SMBUSFLAG):
                 tries=tries+1
                 time.sleep(0.02)
                 print(str(datetime.now()) + ' Multiplexer didnt switch ' + str(tries) + " times on " + str(M))
-        except: #If there is an error in the above.
+        except Exception as err: #If there is an error in the above.
+            print("While attempting to connect multiplexer, hit exception: " + str(err)) #If there is an error in the above.
             tries=tries+1
             time.sleep(0.02)
             print(str(datetime.now()) + ' Failed Multiplexer Comms ' + str(tries) + " times")
@@ -1479,7 +1480,8 @@ def I2CCom(M,device,rw,hl,data1,data2,SMBUSFLAG):
     
     try:
         sysItems['Multiplexer']['device'].write8(int(0x00),int(0x00)) #Disconnect multiplexer with each iteration. 
-    except:
+    except Exception as err: #If there is an error in the above.
+        print("While attempting to disconnect multiplexer, hit exception: " + str(err))
         print(str(datetime.now()) + 'Failed to disconnect multiplexer on device ' + str(M))
 
 
