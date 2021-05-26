@@ -169,17 +169,24 @@ sysItems = {
 
 # This section of code is responsible for the watchdog circuit. The circuit is implemented in hardware on the control computer, and requires the watchdog pin be toggled low->high each second, otherwise it will power down all connected devices. This section is therefore critical to operation of the device.
 def runWatchdog():  
-    #Watchdog toggling function which continually runs in a thread.
+    #Watchdog timing function which continually runs in a thread.
     global sysItems;
     if (sysItems['Watchdog']['ON']==1):
-        sysItems['Watchdog']['thread']
-        GPIO.output(sysItems['Watchdog']['pin'], GPIO.HIGH)
-        time.sleep(0.1)
-        GPIO.output(sysItems['Watchdog']['pin'], GPIO.LOW)
-        time.sleep(0.4)
+        #sysItems['Watchdog']['thread']
+        toggleWatchdog();
+        time.sleep(0.15)
         sysItems['Watchdog']['thread']=Thread(target = runWatchdog, args=())
         sysItems['Watchdog']['thread'].setDaemon(True)
         sysItems['Watchdog']['thread'].start();
+
+def toggleWatchdog():
+    #Toggle the watchdog
+    global sysItems;
+    GPIO.output(sysItems['Watchdog']['pin'], GPIO.HIGH)
+    time.sleep(0.05)
+    GPIO.output(sysItems['Watchdog']['pin'], GPIO.LOW)
+    
+
 
 GPIO.setup(sysItems['Watchdog']['pin'], GPIO.OUT)
 print(str(datetime.now()) + ' Starting watchdog')
@@ -1372,13 +1379,14 @@ def I2CCom(M,device,rw,hl,data1,data2,SMBUSFLAG):
                     print(str(datetime.now()) + 'Disconnected multiplexer on ' + str(M) + ', trying to connect again.')
                 except:
                     print(str(datetime.now()) + 'Failed to recover multiplexer on device ' + str(M))
-            if tries==5:
+            if (tries==5 or tries==10 or tries==15):
+                toggleWatchdog()
                 time.sleep(0.2)
                 
         if tries>20: #If it has failed a number of times then likely something is seriously wrong, so we crash the software.
             sysItems['Watchdog']['ON']=0 #Basically this will crash all the electronics and the software. 
             out=0
-            print(str(datetime.now()) + 'Failed to communicate to Multiplexer 10 times. Disabling hardware and software!')
+            print(str(datetime.now()) + 'Failed to communicate to Multiplexer 20 times. Disabling hardware and software!')
             tries=-1
             os._exit(4)
     
@@ -1670,10 +1678,12 @@ def setPWM(M,device,channels,fraction,ConsecutiveFails):
     global sysDevices
     
     if sysDevices[M][device]['startup']==0: #The following boots up the respective PWM device to the correct frequency. Potentially there is a bug here; if the device loses power after this code is run for the first time it may revert to default PWM frequency.
-        I2CCom(M,device,0,8,0x00,0x11,0) #Turns off device.
+        I2CCom(M,device,0,8,0x00,0x10,0) #Turns off device. Also disables all-call functionality at bit 0 so it won't respond to address 0x70
+        I2CCom(M,device,0,8,0x04,0xe6,0) #Sets SubADDR3 of the PWM chips to be 0x73 instead of 0x74 to avoid any potential collision with the multiplexer @ 0x74
         I2CCom(M,device,0,8,0xfe,sysDevices[M][device]['frequency'],0) #Sets frequency of PWM oscillator. 
         sysDevices[M][device]['startup']=1
-        I2CCom(M,device,0,8,0x00,0x01,0) #Turns device on 
+    
+    I2CCom(M,device,0,8,0x00,0x00,0) #Turns device on 
     
         
     
