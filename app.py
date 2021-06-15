@@ -193,9 +193,9 @@ print(str(datetime.now()) + ' Starting watchdog')
 sysItems['Watchdog']['thread']=Thread(target = runWatchdog, args=())
 sysItems['Watchdog']['thread'].setDaemon(True)
 sysItems['Watchdog']['thread'].start(); 
-GPIO.setup('P8_15', GPIO.OUT)
+GPIO.setup('P8_15', GPIO.OUT) #This output connects to the RESET pin on the I2C Multiplexer.
 GPIO.output('P8_15', GPIO.HIGH)
-GPIO.setup('P8_17', GPIO.OUT)
+GPIO.setup('P8_17', GPIO.OUT) #This output connects to D input of the D-Latch 
 GPIO.output('P8_17', GPIO.HIGH)
 
 
@@ -1380,8 +1380,12 @@ def I2CCom(M,device,rw,hl,data1,data2,SMBUSFLAG):
                 except:
                     print(str(datetime.now()) + 'Failed to recover multiplexer on device ' + str(M))
             if (tries==5 or tries==10 or tries==15):
-                toggleWatchdog()
-                time.sleep(0.2)
+                toggleWatchdog()  #Flip the watchdog pin to ensure it is working.
+                GPIO.output('P8_15', GPIO.LOW) #Flip the Multiplexer RESET pin. Note this reset function works on Control Board V1.2 and later.
+                time.sleep(0.1)
+                GPIO.output('P8_15', GPIO.HIGH)
+                time.sleep(0.1)
+                print(str(datetime.now()) + 'Did multiplexer hard-reset on ' + str(M))
                 
         if tries>20: #If it has failed a number of times then likely something is seriously wrong, so we crash the software.
             sysItems['Watchdog']['ON']=0 #Basically this will crash all the electronics and the software. 
@@ -1770,7 +1774,7 @@ def csvData(M):
     row=row+[sysData[M]['Custom']['Status']*float(sysData[M]['Custom']['ON'])]
     row=row+[sysData[M]['Zigzag']['target']*float(sysData[M]['Zigzag']['ON'])]
     row=row+[sysData[M]['GrowthRate']['current']*sysData[M]['Zigzag']['ON']]
-   
+    
    
 	#Following can be uncommented if you are recording ALL spectra for e.g. biofilm experiments
     #bands=['nm410' ,'nm440','nm470','nm510','nm550','nm583','nm620','nm670','CLEAR','NIR']    
@@ -1779,19 +1783,21 @@ def csvData(M):
     #   for band in bands:
     #       row=row+[sysData[M]['biofilm'][item][band]]
 
-    if len(row) != len(fieldnames):
-        raise ValueError('CSV_WRITER: mismatch between column num and header num')
+
 
     filename = sysData[M]['Experiment']['startTime'] + '_' + M + '_data' + '.csv'
     filename=filename.replace(":","_")
 
     lock.acquire() #We are avoiding writing to a file at the same time as we do digital communications, since it might potentially cause the computer to lag and consequently data transfer to fail.
-    if os.path.isfile(filename) is False:
-        with open(filename, 'a') as csvFile:
-            writer = csv.writer(csvFile)
-            writer.writerow(fieldnames)
+    if os.path.isfile(filename) is False: #Only if we are starting a fresh file
+        if (len(row) == len(fieldnames)):  #AND the fieldnames match up with what is being written.
+            with open(filename, 'a') as csvFile:
+                writer = csv.writer(csvFile)
+                writer.writerow(fieldnames)
+        else:
+            print('CSV_WRITER: mismatch between column num and header num')
 
-    with open(filename, 'a') as csvFile: # Here we append the above row to our CSV file.
+    with open(filename, 'a') as csvFile: # Here we append the new data to our CSV file.
         writer = csv.writer(csvFile)
         writer.writerow(row)
     csvFile.close()        
