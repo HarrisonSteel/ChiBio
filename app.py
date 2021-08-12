@@ -1508,8 +1508,8 @@ def CalibrateOD(M,item,value,value2):
         elif (M=='M3'):
             CF=1494.0
             
-        raw=(ODActual)/a  #THis is performing the inverse function of the linear OD calibration.
-        OD0=ODRaw - raw*CF
+        #raw=(ODActual)/a  #THis is performing the inverse function of the linear OD calibration.
+        #OD0=ODRaw - raw*CF
         OD0=ODRaw/ODActual
         print(OD0)
     
@@ -1537,8 +1537,8 @@ def CalibrateOD(M,item,value,value2):
         elif (M=='M3'):
             CF=522
             
-        raw=(ODActual)/a  #THis is performing the inverse function of the linear OD calibration.
-        OD0=ODRaw - raw*CF
+        #raw=(ODActual)/a  #THis is performing the inverse function of the linear OD calibration.
+        #OD0=ODRaw - raw*CF
         OD0=ODRaw/ODActual
         print(OD0)
     
@@ -1591,7 +1591,7 @@ def MeasureOD(M):
                 CF=1660.0
             elif (M=='M3'):
                 CF=1494.0
-            raw=out[0]/CF - sysData[M]['OD0']['target']/CF
+            #raw=out[0]/CF - sysData[M]['OD0']['target']/CF
             raw=out[0]/sysData[M]['OD0']['target']
             sysData[M]['OD']['current']=raw
         except:
@@ -1612,7 +1612,7 @@ def MeasureOD(M):
                 CF=574.0
             elif (M=='M3'):
                 CF=522.0
-            raw=out[0]/CF - sysData[M]['OD0']['target']/CF
+            #raw=out[0]/CF - sysData[M]['OD0']['target']/CF
             raw=out[0]/sysData[M]['OD0']['target']
             #sysData[M]['OD']['current']=raw*a
             sysData[M]['OD']['current']=raw
