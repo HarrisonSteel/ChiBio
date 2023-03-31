@@ -1,0 +1,13 @@
+[Unit]
+Description=Chi.bio interface
+After=syslog.target network.target
+
+[Service]
+Type=simple
+ExecStart=/root/chibio/cb.sh
+StandardError=journal
+StandardOutput=journal
+StandardInput=null
+
+[Install]
+WantedBy=multi-user.target

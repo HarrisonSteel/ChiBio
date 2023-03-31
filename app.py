@@ -19,9 +19,13 @@ import copy
 import csv
 import smbus2 as smbus
 
-
 application = Flask(__name__)
 application.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0 #Try this https://stackoverflow.com/questions/23112316/using-flask-how-do-i-modify-the-cache-control-header-for-all-output/23115561#23115561
+
+import logging
+gunicorn_logger = logging.getLogger('gunicorn.error')
+application.logger.handlers = gunicorn_logger.handlers
+application.logger.setLevel(gunicorn_logger.level)
 
 lock=Lock()
         
@@ -189,7 +193,7 @@ def toggleWatchdog():
 
 
 GPIO.setup(sysItems['Watchdog']['pin'], GPIO.OUT)
-print(str(datetime.now()) + ' Starting watchdog')
+application.logger.info(' Starting watchdog')
 sysItems['Watchdog']['thread']=Thread(target = runWatchdog, args=())
 sysItems['Watchdog']['thread'].setDaemon(True)
 sysItems['Watchdog']['thread'].start(); 
@@ -372,7 +376,7 @@ def initialise(M):
     # while (1==1):
     #     i=i+1
     #     if (i%1000==1):
-    #         print(str(i))
+    #         application.logger.debug(str(i))
     #     sysDevices[M]['ThermometerInternal']['device'].readU8(int(0x05))
     # getData=I2CCom(M,which,1,16,0x05,0,0)
     
@@ -380,7 +384,7 @@ def initialise(M):
     scanDevices(M)
     if(sysData[M]['present']==1):
         turnEverythingOff(M)
-        print(str(datetime.now()) + " Initialised " + str(M) +', Device ID: ' + sysData[M]['DeviceID'])
+        application.logger.info(" Initialised " + str(M) +', Device ID: ' + sysData[M]['DeviceID'])
 
     
     
@@ -390,7 +394,7 @@ def initialiseAll():
     sysItems['Multiplexer']['device']=I2C.get_i2c_device(0x74,2) 
     sysItems['FailCount']=0
     time.sleep(2.0) #This wait is to allow the watchdog circuit to boot.
-    print(str(datetime.now()) + ' Initialising devices')
+    application.logger.info(' Initialising devices')
 
     for M in ['M0','M1','M2','M3','M4','M5','M6','M7']:
         initialise(M)
@@ -564,7 +568,7 @@ def SetOutputTarget(M,item, value):
     M=str(M)
     if (M=="0"):
         M=sysItems['UIDevice']
-    print(str(datetime.now()) + " Set item: " + str(item) + " to value " + str(value) + " on " + str(M))
+    application.logger.debug(" Set item: " + str(item) + " to value " + str(value) + " on " + str(M))
     if (value<sysData[M][item]['min']):
         value=sysData[M][item]['min']
     if (value>sysData[M][item]['max']):
@@ -916,8 +920,8 @@ def AS7341Read(M,Gain,ISteps,reset):
     I2CCom(M,'AS7341',0,8,int(0x80),int(0x01),0)  #Stops spectral measurement, leaves power on.
 
     #Status2=int(I2CCom(M,'AS7341',1,8,0xA3,0x00,0)) #Reads system status at end of spectral measursement. 
-    #print(str(ASTATUS))
-    #print(str(Status2))
+    #application.logger.debug(str(ASTATUS))
+    #application.logger.debug(str(Status2))
 
     sysData[M]['AS7341']['current']['ADC0']=int(bin(C0_H)[2:].zfill(8)+bin(C0_L)[2:].zfill(8),2)
     sysData[M]['AS7341']['current']['ADC1']=int(bin(C1_H)[2:].zfill(8)+bin(C1_L)[2:].zfill(8),2)
@@ -928,7 +932,7 @@ def AS7341Read(M,Gain,ISteps,reset):
     
     
     if (sysData[M]['AS7341']['current']['ADC0']==65535 or sysData[M]['AS7341']['current']['ADC1']==65535 or sysData[M]['AS7341']['current']['ADC2']==65535 or sysData[M]['AS7341']['current']['ADC3']==65535 or sysData[M]['AS7341']['current']['ADC4']==65535 or sysData[M]['AS7341']['current']['ADC5']==65535 ):
-        print(str(datetime.now()) + ' Spectrometer measurement was saturated on device ' + str(M)) #Not sure if this saturation check above actually works correctly...
+        application.logger.info(' Spectrometer measurement was saturated on device ' + str(M)) #Not sure if this saturation check above actually works correctly...
     return 0
         
 
@@ -1007,10 +1011,10 @@ def GetLight(M,wavelengths,Gain,ISteps):
             AS7341Read(M,Gain,ISteps,success) 
             success=2
         except:
-            print(str(datetime.now()) + 'AS7341 measurement failed on ' + str(M))
+            application.logger.warning('AS7341 measurement failed on ' + str(M))
             success=success+1
             if success==2:
-                print(str(datetime.now()) + 'AS7341 measurement failed twice on ' + str(M) + ', setting unity values')
+                application.logger.warning('AS7341 measurement failed twice on ' + str(M) + ', setting unity values')
                 sysData[M]['AS7341']['current']['ADC0']=1
                 DACS=['ADC1', 'ADC2', 'ADC3', 'ADC4', 'ADC5']
                 for DAC in DACS:
@@ -1179,7 +1183,7 @@ def CustomProgram(M):
             iters=(timept//timelength)
             Dose0=float(Params[0])
             Dose=Dose0*(2.0**float(iters)) #UV Dose, in terms of amount of time UV shoudl be left on at 1.0 intensity.
-            print(str(datetime.now()) + ' Gave dose ' + str(Dose) + " at iteration " + str(iters) + " on device " + str(M))
+            application.logger.info(' Gave dose ' + str(Dose) + " at iteration " + str(iters) + " on device " + str(M))
             
             if (Dose<30.0):  
                 powerlvl=Dose/30.0
@@ -1207,7 +1211,7 @@ def CustomProgram(M):
                 
             Dose0=float(Params[0])
             Dose=Dose0*(2.0**float(iters)) #UV Dose, in terms of amount of time UV shoudl be left on at 1.0 intensity.
-            print(str(datetime.now()) + ' Gave dose ' + str(Dose) + " at iteration " + str(iters) + " on device " + str(M))
+            application.logger.info(' Gave dose ' + str(Dose) + " at iteration " + str(iters) + " on device " + str(M))
               
             if (Dose<30.0):  
                 powerlvl=Dose/30.0
@@ -1285,7 +1289,7 @@ def CharacteriseDevice(M,Program):
 def CharacteriseDevice2(M):
     global sysData
     global sysItems
-    print('In1')
+    application.logger.debug('In1')
     M=str(M)
     if (M=="0"):
         M=sysItems['UIDevice']
@@ -1301,7 +1305,7 @@ def CharacteriseDevice2(M):
         }
         
         
-    print('Got in!')   
+    application.logger.debug('Got in!')   
     bands=['nm410' ,'nm440','nm470','nm510','nm550','nm583','nm620','nm670','CLEAR']    
     powerlevels=[0,0.01,0.02,0.03,0.04,0.05,0.06,0.07,0.08,0.09,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
     items= ['LEDA','LEDB','LEDC','LEDD','LEDE','LEDF','LEDG','LASER650']
@@ -1314,7 +1318,7 @@ def CharacteriseDevice2(M):
             SetOutputOn(M,item,1)
             GetSpectrum(M,gains[gi])
             SetOutputOn(M,item,0)
-            print(item + ' ' + str(power))
+            application.logger.debug(item + ' ' + str(power))
             for band in bands:
                 result[item][band].append(int(sysData[M]['AS7341']['spectrum'][band]))
             addTerminal(M,'Measured Item = ' + str(item) + ' at power ' + str(power))
@@ -1346,7 +1350,7 @@ def I2CCom(M,device,rw,hl,data1,data2,SMBUSFLAG):
     
     global sysDevices
     if(sysData[M]['present']==0): #Something stupid has happened in software if this is the case!
-        print(str(datetime.now()) + ' Trying to communicate with absent device - bug in software!. Disabling hardware and software!')
+        application.logger.critical(' Trying to communicate with absent device - bug in software!. Disabling hardware and software!')
         sysItems['Watchdog']['ON']=0 #Basically this will crash all the electronics and the software. 
         out=0
         tries=-1
@@ -1368,29 +1372,30 @@ def I2CCom(M,device,rw,hl,data1,data2,SMBUSFLAG):
             else:
                 tries=tries+1
                 time.sleep(0.02)
-                print(str(datetime.now()) + ' Multiplexer didnt switch ' + str(tries) + " times on " + str(M))
-        except: #If there is an error in the above.
+                application.logger.warning(' Multiplexer didnt switch ' + str(tries) + " times on " + str(M))
+        except Exception as e: #If there is an error in the above.
             tries=tries+1
             time.sleep(0.02)
-            print(str(datetime.now()) + ' Failed Multiplexer Comms ' + str(tries) + " times")
+            application.logger.warning(' Failed Multiplexer Comms ' + str(tries) + " times")
+            application.logger.warning(' Error is ' + str(tries))
             if (tries>2):
                 try:
                     sysItems['Multiplexer']['device'].write8(int(0x00),int(0x00)) #Disconnect multiplexer. 
-                    print(str(datetime.now()) + 'Disconnected multiplexer on ' + str(M) + ', trying to connect again.')
+                    application.logger.warning('Disconnected multiplexer on ' + str(M) + ', trying to connect again')
                 except:
-                    print(str(datetime.now()) + 'Failed to recover multiplexer on device ' + str(M))
+                    application.logger.warning('Failed to recover multiplexer on device ' + str(M))
             if (tries==5 or tries==10 or tries==15):
                 toggleWatchdog()  #Flip the watchdog pin to ensure it is working.
                 GPIO.output('P8_15', GPIO.LOW) #Flip the Multiplexer RESET pin. Note this reset function works on Control Board V1.2 and later.
                 time.sleep(0.1)
                 GPIO.output('P8_15', GPIO.HIGH)
                 time.sleep(0.1)
-                print(str(datetime.now()) + 'Did multiplexer hard-reset on ' + str(M))
+                application.logger.warning('Did multiplexer hard-reset on ' + str(M))
                 
         if tries>20: #If it has failed a number of times then likely something is seriously wrong, so we crash the software.
             sysItems['Watchdog']['ON']=0 #Basically this will crash all the electronics and the software. 
             out=0
-            print(str(datetime.now()) + 'Failed to communicate to Multiplexer 20 times. Disabling hardware and software!')
+            application.logger.critical('Failed to communicate to Multiplexer 20 times. Disabling hardware and software!')
             tries=-1
             os._exit(4)
     
@@ -1424,10 +1429,10 @@ def I2CCom(M,device,rw,hl,data1,data2,SMBUSFLAG):
             tries=tries+1
             
             if (device!="ThermometerInternal"):
-                print(str(datetime.now()) + ' Failed ' + str(device) + ' comms ' + str(tries) + " times on device " + str(M) )
+                application.logger.warning(' Failed ' + str(device) + ' comms ' + str(tries) + " times on device " + str(M))
                 time.sleep(0.02)
             if (device=='AS7341'):
-                print(str(datetime.now()) + ' Failed  AS7341 in I2CCom while trying to send ' + str(data1)  + " and " + str(data2))
+                application.logger.warning(' Failed  AS7341 in I2CCom while trying to send ' + str(data1)  + " and " + str(data2))
                 out=-1
                 tries=-1
 
@@ -1439,7 +1444,7 @@ def I2CCom(M,device,rw,hl,data1,data2,SMBUSFLAG):
             sysItems['Watchdog']['ON']=0 #Basically this will crash all the electronics and the software. 
             out=0
             sysData[M]['present']=0
-            print(str(datetime.now()) + 'Failed to communicate to a device 10 times. Disabling hardware and software!')
+            application.logger.critical('Failed to communicate to a device 10 times. Disabling hardware and software!')
             tries=-1
             os._exit(4)
                 
@@ -1450,7 +1455,7 @@ def I2CCom(M,device,rw,hl,data1,data2,SMBUSFLAG):
     try:
         sysItems['Multiplexer']['device'].write8(int(0x00),int(0x00)) #Disconnect multiplexer with each iteration. 
     except:
-        print(str(datetime.now()) + 'Failed to disconnect multiplexer on device ' + str(M))
+        application.logger.warning('Failed to disconnect multiplexer on device ' + str(M))
 
 
     
@@ -1478,27 +1483,27 @@ def CalibrateOD(M,item,value,value2):
         b=sysData[M]['OD0']['LASERb'] 
         if (ODActual<0):
             ODActual=0
-            print(str(datetime.now()) + "You put a negative OD into calibration! Setting it to 0")
+            application.logger.warning("You put a negative OD into calibration! Setting it to 0")
         
         raw=((ODActual/a +  (b/(2*a))**2)**0.5) - (b/(2*a)) #THis is performing the inverse function of the quadratic OD calibration.
         OD0=(10.0**raw)*ODRaw
         if (OD0<sysData[M][item]['min']):
             OD0=sysData[M][item]['min']
-            print(str(datetime.now()) + 'OD calibration value seems too low?!')
+            application.logger.info('OD calibration value seems too low?!')
 
         if (OD0>sysData[M][item]['max']):
             OD0=sysData[M][item]['max']
-            print(str(datetime.now()) + 'OD calibration value seems too high?!')
+            application.logger.info('OD calibration value seems too high?!')
 
     
         sysData[M][item]['target']=OD0
-        print(str(datetime.now()) + "Calibrated OD")
+        application.logger.info("Calibrated OD")
     elif (device=='LEDF'):
         a=sysData[M]['OD0']['LEDFa']#Retrieve the calibration factors for OD.
         
         if (ODActual<0):
             ODActual=0
-            print("You put a negative OD into calibration! Setting it to 0")
+            application.logger.warning("You put a negative OD into calibration! Setting it to 0")
         if (M=='M0'):
             CF=1299.0
         elif (M=='M1'):
@@ -1511,23 +1516,23 @@ def CalibrateOD(M,item,value,value2):
         #raw=(ODActual)/a  #THis is performing the inverse function of the linear OD calibration.
         #OD0=ODRaw - raw*CF
         OD0=ODRaw/ODActual
-        print(OD0)
+        application.logger.debug(str(OD0) + "\n")
     
         if (OD0<sysData[M][item]['min']):
             OD0=sysData[M][item]['min']
-            print('OD calibration value seems too low?!')
+            application.logger.info('OD calibration value seems too low?!')
         if (OD0>sysData[M][item]['max']):
             OD0=sysData[M][item]['max']
-            print('OD calibration value seems too high?!')
+            application.logger.info('OD calibration value seems too high?!')
     
         sysData[M][item]['target']=OD0
-        print("Calibrated OD")
+        application.logger.info("Calibrated OD\n")
     elif (device=='LEDA'):
         a=sysData[M]['OD0']['LEDAa']#Retrieve the calibration factors for OD.
         
         if (ODActual<0):
             ODActual=0
-            print("You put a negative OD into calibration! Setting it to 0")
+            application.logger.warning("You put a negative OD into calibration! Setting it to 0")
         if (M=='M0'):
             CF=422
         elif (M=='M1'):
@@ -1540,17 +1545,17 @@ def CalibrateOD(M,item,value,value2):
         #raw=(ODActual)/a  #THis is performing the inverse function of the linear OD calibration.
         #OD0=ODRaw - raw*CF
         OD0=ODRaw/ODActual
-        print(OD0)
+        application.logger.debug(str(OD0) + "\n")
     
         if (OD0<sysData[M][item]['min']):
             OD0=sysData[M][item]['min']
-            print('OD calibration value seems too low?!')
+            application.logger.info('OD calibration value seems too low?!')
         if (OD0>sysData[M][item]['max']):
             OD0=sysData[M][item]['max']
-            print('OD calibration value seems too high?!')
+            application.logger.info('OD calibration value seems too high?!')
     
         sysData[M][item]['target']=OD0
-        print("Calibrated OD")
+        application.logger.info("Calibrated OD\n")
         
     return ('', 204)    
     
@@ -1576,7 +1581,7 @@ def MeasureOD(M):
             sysData[M]['OD']['current']=raw*b + raw*raw*a
         except:
             sysData[M]['OD']['current']=0;
-            print(str(datetime.now()) + ' OD Measurement exception on ' + str(device))
+            application.logger.warning(' OD Measurement exception on ' + str(device))
     elif (device=='LEDF'):
         out=GetTransmission(M,'LEDF',['CLEAR'],7,255)
 
@@ -1596,7 +1601,7 @@ def MeasureOD(M):
             sysData[M]['OD']['current']=raw
         except:
             sysData[M]['OD']['current']=0;
-            print(str(datetime.now()) + ' OD Measurement exception on ' + str(device))
+            application.logger.warning(' OD Measurement exception on ' + str(device))
 
     elif (device=='LEDA'):
         out=GetTransmission(M,'LEDA',['CLEAR'],7,255)
@@ -1618,7 +1623,7 @@ def MeasureOD(M):
             sysData[M]['OD']['current']=raw
         except:
             sysData[M]['OD']['current']=0;
-            print(str(datetime.now()) + ' OD Measurement exception on ' + str(device))
+            application.logger.warning(' OD Measurement exception on ' + str(device))
     
     return ('', 204)  
     
@@ -1715,10 +1720,10 @@ def setPWM(M,device,channels,fraction,ConsecutiveFails):
     
         if(CheckLow!=(int(LowVals,2)) or CheckHigh!=(int(HighVals,2)) or CheckHighON!=int(0x00) or CheckLowON!=int(0x00)): #We check to make sure it has been set to appropriate values.
             ConsecutiveFails=ConsecutiveFails+1
-            print(str(datetime.now()) + ' Failed transmission test on ' + str(device) + ' ' + str(ConsecutiveFails) + ' times consecutively on device '  + str(M) )
+            application.logger.warning(' Failed transmission test on ' + str(device) + ' ' + str(ConsecutiveFails) + ' times consecutively on device '  + str(M))
             if ConsecutiveFails>10:
                 sysItems['Watchdog']['ON']=0 #Basically this will crash all the electronics and the software. 
-                print(str(datetime.now()) + 'Failed to communicate to PWM 10 times. Disabling hardware and software!')
+                application.logger.critical('Failed to communicate to PWM 10 times. Disabling hardware and software!')
                 os._exit(4)
             else:
                 time.sleep(0.1)
@@ -1795,7 +1800,7 @@ def csvData(M):
                 writer = csv.writer(csvFile)
                 writer.writerow(fieldnames)
         else:
-            print('CSV_WRITER: mismatch between column num and header num')
+            application.logger.warning('CSV_WRITER: mismatch between column num and header num')
 
     with open(filename, 'a') as csvFile: # Here we append the new data to our CSV file.
         writer = csv.writer(csvFile)
@@ -1977,7 +1982,7 @@ def RegulateOD(M):
         try:
             sysData[M]['OD']['target']=TargetOD
         except:
-            print('Somehow you managed to activate Zigzag at a sub-optimal time')
+            application.logger.warning('Somehow you managed to activate Zigzag at a sub-optimal time')
             #Do nothing
  
     return
@@ -2232,4 +2237,4 @@ if __name__ == '__main__':
     application.run(debug=True,threaded=True,host='0.0.0.0',port=5000)
     
 initialiseAll()
-print(str(datetime.now()) + ' Start Up Complete')
+application.logger.info(' Start Up Complete\n')
