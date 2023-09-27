@@ -1248,6 +1248,7 @@ def SetLightActuation(Excite):
     item="Light"
     if sysData[M][item]['ON']==1:
         sysData[M][item]['ON']=0
+	SetOutputOn(M,sysData[M][item]['Excite'],0) #In case the current LED is on we need to make sure it turns off
         return ('', 204)
     else:
         sysData[M][item]['Excite']=str(Excite)
