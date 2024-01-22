@@ -1248,7 +1248,7 @@ def SetLightActuation(Excite):
     item="Light"
     if sysData[M][item]['ON']==1:
         sysData[M][item]['ON']=0
-	SetOutputOn(M,sysData[M][item]['Excite'],0) #In case the current LED is on we need to make sure it turns off
+        SetOutputOn(M,sysData[M][item]['Excite'],0) #In case the current LED is on we need to make sure it turns off
         return ('', 204)
     else:
         sysData[M][item]['Excite']=str(Excite)
@@ -1572,12 +1572,12 @@ def MeasureOD(M):
     
         a=sysData[M]['OD0']['LASERa']#Retrieve the calibration factors for OD.
         b=sysData[M]['OD0']['LASERb'] 
-        try:
+        if abs(sysData[M]['OD0']['raw']) > 0.001: # avoid devision by 0
             raw=math.log10(sysData[M]['OD0']['target']/sysData[M]['OD0']['raw'])
             sysData[M]['OD']['current']=raw*b + raw*raw*a
-        except:
-            sysData[M]['OD']['current']=0;
-            print(str(datetime.now()) + ' OD Measurement exception on ' + str(device))
+        else:
+            sysData[M]['OD']['current']=0
+            print(str(datetime.now()) + ' OD Measurement close to 0 on ' + str(device))
     elif (device=='LEDF'):
         out=GetTransmission(M,'LEDF',['CLEAR'],7,255)
 
