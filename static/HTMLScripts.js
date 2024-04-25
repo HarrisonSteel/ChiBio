@@ -47,7 +47,14 @@ function updateData(data){
         document.getElementById("LEDFCurrent").innerHTML=data.LEDF.target.toFixed(3);
         document.getElementById("LEDGDefault").innerHTML=data.LEDG.default.toFixed(3);
         document.getElementById("LEDGCurrent").innerHTML=data.LEDG.target.toFixed(3);
-        
+
+        document.getElementById("LEDHDefault").innerHTML=data.LEDH.default.toFixed(3);
+        document.getElementById("LEDHCurrent").innerHTML=data.LEDH.target.toFixed(3);
+        document.getElementById("LEDIDefault").innerHTML=data.LEDI.default.toFixed(3);
+        document.getElementById("LEDICurrent").innerHTML=data.LEDI.target.toFixed(3);
+        document.getElementById("LEDVDefault").innerHTML=data.LEDV.default.toFixed(3);
+        document.getElementById("LEDVCurrent").innerHTML=data.LEDV.target.toFixed(3);
+
         document.getElementById("UVDefault").innerHTML=data.UV.default.toFixed(3);
         document.getElementById("UVCurrent").innerHTML=data.UV.target.toFixed(3);
         
@@ -139,6 +146,9 @@ function updateData(data){
         document.getElementById("LEDESwitch").disabled = (measuring );
         document.getElementById("LEDFSwitch").disabled = (measuring );
         document.getElementById("LEDGSwitch").disabled = (measuring );
+        document.getElementById("LEDHSwitch").disabled = (measuring );
+        document.getElementById("LEDISwitch").disabled = (measuring );
+        document.getElementById("LEDVSwitch").disabled = (measuring );
         document.getElementById("LASER650Switch").disabled = (measuring );
         
         document.getElementById("GetSpectrum").disabled = (measuring );
@@ -149,18 +159,6 @@ function updateData(data){
         document.getElementById("ODMeasure").disabled = (measuring );
         
         
-        
-        //document.getElementById("LEDASet").disabled = (data.LEDA.ON==1);
-        //document.getElementById("LEDBSet").disabled = (data.LEDB.ON==1);
-        //document.getElementById("LEDCSet").disabled = (data.LEDC.ON==1);
-        //document.getElementById("LEDDSet").disabled = (data.LEDD.ON==1);
-        //document.getElementById("LEDESet").disabled = (data.LEDE.ON==1);
-        //document.getElementById("LEDFSet").disabled = (data.LEDF.ON==1);
-        //document.getElementById("LEDGSet").disabled = (data.LEDG.ON==1);
-        
-        //document.getElementById("UVSet").disabled = (data.UV.ON==1);
-        
-        //document.getElementById("LASER650Set").disabled = (data.LASER650.ON==1);
         
         
         
@@ -216,6 +214,28 @@ function updateData(data){
              document.getElementById("LEDGSwitch").setAttribute("style", "")
         }
         
+        if (data.LEDH.ON==1){
+          document.getElementById("LEDHSwitch").setAttribute("style", "border-style:inset;background-color:lightblue")
+          
+     } else {
+          document.getElementById("LEDHSwitch").setAttribute("style", "")
+     }
+
+     if (data.LEDI.ON==1){
+          document.getElementById("LEDISwitch").setAttribute("style", "border-style:inset;background-color:lightblue")
+          
+     } else {
+          document.getElementById("LEDISwitch").setAttribute("style", "")
+     }
+
+     if (data.LEDV.ON==1){
+          document.getElementById("LEDVSwitch").setAttribute("style", "border-style:inset;background-color:lightblue")
+          
+     } else {
+          document.getElementById("LEDVSwitch").setAttribute("style", "")
+     }
+
+
         
          if (data.UV.ON==1){
              document.getElementById("UVSwitch").setAttribute("style", "border-style:inset;background-color:lightblue")
@@ -338,6 +358,101 @@ function updateData(data){
         } else {
              document.getElementById("CustomSwitch").setAttribute("style", "")
         }
+
+
+
+
+
+
+
+
+
+
+        //Making stuff visible/invisible depending on LED version the user has.
+        if (document.getElementById("FPRefresh").value != data.UIDevice){ //This means this code is only executed when we boot or when we are moving between devices.
+         
+       
+
+
+
+
+
+
+          if (data.Version.LED == 1){
+
+               const optionsLED1 = [
+                    {value: "LEDA", text: "395/30"},
+                    {value: "LEDB", text: "457/35"},
+                    {value: "LEDC", text: "500/55"},
+                    {value: "LEDD", text: "523/70"},
+                    {value: "LEDE", text: "595/25"},
+                    {value: "LEDF", text: "623/30"},
+                    {value: "LEDG", text: "6500K"},
+                    {value: "LASER650", text: "Laser"}
+               ]
+               let optionsHTML = "";
+               optionsLED1.forEach(option => {
+                    optionsHTML += `<option value="${option.value}">${option.text}</option>`;
+               });
+               document.getElementById('LightExcite1').innerHTML = optionsHTML;
+               document.getElementById('FPExcite1').innerHTML = optionsHTML;
+               document.getElementById('FPExcite2').innerHTML = optionsHTML;
+               document.getElementById('FPExcite3').innerHTML = optionsHTML;
+
+                    document.getElementById("LEDAContainer").style.display = "";
+                    document.getElementById("LEDEContainer").style.display = "";
+                    document.getElementById("LEDGContainer").style.display = "";
+                    document.getElementById("LEDHContainer").style.display = "none";
+                    document.getElementById("LEDIContainer").style.display = "none";
+                    document.getElementById("LEDVContainer").style.display = "none";
+          
+          
+          
+          } else if (data.Version.LED == 2){
+               const optionsLED2 = [
+                    {value: "LEDB", text: "457/35"},
+                    {value: "LEDC", text: "500/55"},
+                    {value: "LEDD", text: "523/70"},
+                    {value: "LEDI", text: "550/105"},
+                    {value: "LEDH", text: "600/80"},
+                    {value: "LEDF", text: "623/30"},
+                    {value: "LEDV", text: "White"},
+                    {value: "LASER650", text: "Laser"}
+               ]
+               let optionsHTML = "";
+               optionsLED2.forEach(option => {
+                    optionsHTML += `<option value="${option.value}">${option.text}</option>`;
+               });
+               document.getElementById('LightExcite1').innerHTML = optionsHTML;
+               document.getElementById('FPExcite1').innerHTML = optionsHTML;
+               document.getElementById('FPExcite2').innerHTML = optionsHTML;
+               document.getElementById('FPExcite3').innerHTML = optionsHTML;
+
+                    document.getElementById("LEDAContainer").style.display = "none";
+                    document.getElementById("LEDEContainer").style.display = "none";
+                    document.getElementById("LEDGContainer").style.display = "none";
+                    document.getElementById("LEDHContainer").style.display = "";
+                    document.getElementById("LEDIContainer").style.display = "";
+                    document.getElementById("LEDVContainer").style.display = "";
+          }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         
         
         if (data.presentDevices.M0 ==0) {

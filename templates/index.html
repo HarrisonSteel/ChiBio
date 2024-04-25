@@ -244,7 +244,7 @@
      <h3>Light Outputs</h3>
      
      <!-- LED A -->
-      <div id="LEDAContainer"  class="container" style="border:2px solid #47008F">
+      <div id="LEDAContainer"  class="container" style="border:2px solid #47008F; display: none;">
         <div class="row">
             <div class="col-2 align-self-center">
              <b><font color="47008F"> 395nm <br> LED</font></b>
@@ -364,10 +364,70 @@
       
       </div>
       </div>
+
+
+      <div id="LEDIContainer"  class="container" style="border:2px solid #a3ff00; display: none;">
+        <div class="row">
+            <div class="col-2 align-self-center">
+             <b><font color="a3ff00"> 550nm <br> LED</font></b>
+        
+          </div>
+          <div class="col-2 align-self-center">
+              Current: <br>
+              <div id="LEDICurrent">0</div>
+            
+          </div>
+          <div class="col-2 align-self-center">
+              Default: <br>
+              <div id="LEDIDefault">0</div>
+            
+          </div>
+          <div class="col-2 align-self-center">
+              New: <br>
+              <input id="LEDIInput" type="number" size="5" value=0 style="width: 4em"/>
+      
+          </div>
+          <div class="col-4 align-self-center">
+              <button id="LEDISet">Set</button> <button id="LEDISwitch" >Switch</button>
+        
+          </div>
+      
+      </div>
+      </div>
+
+
+      <div id="LEDHContainer"  class="container" style="border:2px solid #ffbe00; display: none;">
+        <div class="row">
+            <div class="col-2 align-self-center">
+             <b><font color="ffbe00"> 600nm <br> LED</font></b>
+        
+          </div>
+          <div class="col-2 align-self-center">
+              Current: <br>
+              <div id="LEDHCurrent">0</div>
+            
+          </div>
+          <div class="col-2 align-self-center">
+              Default: <br>
+              <div id="LEDHDefault">0</div>
+            
+          </div>
+          <div class="col-2 align-self-center">
+              New: <br>
+              <input id="LEDHInput" type="number" size="5" value=0 style="width: 4em"/>
+      
+          </div>
+          <div class="col-4 align-self-center">
+              <button id="LEDHSet">Set</button> <button id="LEDHSwitch" >Switch</button>
+        
+          </div>
+      
+      </div>
+      </div>
       
       
        <!-- LEDE -->
-      <div id="LEDEContainer"  class="container" style="border:2px solid #FFC400">
+      <div id="LEDEContainer"  class="container" style="border:2px solid #FFC400; display: none;">
         <div class="row">
             <div class="col-2 align-self-center">
              <b><font color="FFC400"> 595nm <br> LED</font></b>
@@ -430,7 +490,7 @@
       
       
        <!-- LEDG -->
-      <div id="LEDGContainer"  class="container" style="border:2px solid #FFFFFF">
+      <div id="LEDGContainer"  class="container" style="border:2px solid #FFFFFF; display: none;">
         <div class="row">
             <div class="col-2 align-self-center">
              <b><font color="000000"> 6500K <br> LED</font></b>
@@ -453,6 +513,35 @@
           </div>
           <div class="col-4 align-self-center">
               <button id="LEDGSet">Set</button> <button id="LEDGSwitch" >Switch</button>
+        
+          </div>
+      
+      </div>
+      </div>
+
+      <div id="LEDVContainer"  class="container" style="border:2px solid #FFFFFF; display: none;">
+        <div class="row">
+            <div class="col-2 align-self-center">
+             <b><font color="000000"> White <br> Mix</font></b>
+        
+          </div>
+          <div class="col-2 align-self-center">
+              Current: <br>
+              <div id="LEDVCurrent">0</div>
+            
+          </div>
+          <div class="col-2 align-self-center">
+              Default: <br>
+              <div id="LEDVDefault">0</div>
+            
+          </div>
+          <div class="col-2 align-self-center">
+              New: <br>
+              <input id="LEDVInput" type="number" size="5" value=0 style="width: 4em"/>
+      
+          </div>
+          <div class="col-4 align-self-center">
+              <button id="LEDVSet">Set</button> <button id="LEDVSwitch" >Switch</button>
         
           </div>
       
@@ -863,13 +952,6 @@
             <div class="col-3 align-self-center">
              <b><font color="000000"> Light</font></b><br>
         <select id="LightExcite1">
-                       <option value="LEDA">395/30</option>
-                       <option value="LEDB">457/35</option>
-                       <option value="LEDC">500/55</option>
-                       <option value="LEDD">523/70</option>
-                       <option value="LEDE">595/25</option>
-                       <option value="LEDF">623/30</option>
-                       <option value="LEDG">6500K</option>
              </select>
           </div>
           <div class="col-2 align-self-center">
@@ -984,16 +1066,7 @@
             <div class="col-2 align-self-center">
              Excite: <br>
              <select id="FPExcite1">
-        
-        <option value="LEDA">395/30</option>
-        <option value="LEDB">457/35</option>
-        <option value="LEDC">500/55</option>
-        <option value="LEDD">523/70</option>
-        <option value="LEDE">595/25</option>
-        <option value="LEDF">623/30</option>
-        <option value="LEDG">6500K</option>
-		<option value="LASER650">Laser</option>
-        </select> <br>
+             </select> <br>
         Current: 
            
           </div>
@@ -1097,16 +1170,7 @@
             <div class="col-2 align-self-center">
              Excite: <br>
              <select id="FPExcite2">
-      
-        <option value="LEDA">395/30</option>
-        <option value="LEDB">457/35</option>
-        <option value="LEDC">500/55</option>
-        <option value="LEDD">523/70</option>
-        <option value="LEDE">595/25</option>
-        <option value="LEDF">623/30</option>
-        <option value="LEDG">6500K</option>
-		<option value="LASER650">Laser</option>
-        </select><br>
+          </select><br>
         Current: 
            
           </div>
@@ -1216,16 +1280,7 @@
             <div class="col-2 align-self-center">
              Excite: <br>
              <select id="FPExcite3">
-        
-        <option value="LEDA">395/30</option>
-        <option value="LEDB">457/35</option>
-        <option value="LEDC">500/55</option>
-        <option value="LEDD">523/70</option>
-        <option value="LEDE">595/25</option>
-        <option value="LEDF">623/30</option>
-        <option value="LEDG">6500K</option>
-		<option value="LASER650">Laser</option>
-        </select><br>
+         </select><br>
         Current: 
            
           </div>
@@ -1747,6 +1802,111 @@ function TitleFailure() {
              })
         });
     </script>
+
+
+
+
+ 
+<script>
+    $(function() {
+        $('#LEDHSet').click(function(){
+          var value = $('#LEDHInput').val();
+          var targetURL = '/SetOutputTarget/LEDH/0/' + value;
+           $.ajax({
+               type:'POST',
+               url: targetURL,
+               success:function(response){ 
+               getSysData();
+             }
+         }); 
+         })
+    });
+</script>
+
+  <script>
+    $(function() {
+        $('#LEDHSwitch').click(function(){
+           
+           var targetURL = '/SetOutputOn/LEDH/2/0';
+           $.ajax({
+               type:'POST',
+               url: targetURL,
+               success:function(response){ 
+               getSysData();
+             }
+         }); 
+         })
+    });
+</script>
+
+
+
+ 
+<script>
+    $(function() {
+        $('#LEDISet').click(function(){
+          var value = $('#LEDIInput').val();
+          var targetURL = '/SetOutputTarget/LEDI/0/' + value;
+           $.ajax({
+               type:'POST',
+               url: targetURL,
+               success:function(response){ 
+               getSysData();
+             }
+         }); 
+         })
+    });
+</script>
+
+  <script>
+    $(function() {
+        $('#LEDISwitch').click(function(){
+           
+           var targetURL = '/SetOutputOn/LEDI/2/0';
+           $.ajax({
+               type:'POST',
+               url: targetURL,
+               success:function(response){ 
+               getSysData();
+             }
+         }); 
+         })
+    });
+</script>
+
+
+ 
+<script>
+    $(function() {
+        $('#LEDVSet').click(function(){
+          var value = $('#LEDVInput').val();
+          var targetURL = '/SetOutputTarget/LEDV/0/' + value;
+           $.ajax({
+               type:'POST',
+               url: targetURL,
+               success:function(response){ 
+               getSysData();
+             }
+         }); 
+         })
+    });
+</script>
+
+  <script>
+    $(function() {
+        $('#LEDVSwitch').click(function(){
+           
+           var targetURL = '/SetOutputOn/LEDV/2/0';
+           $.ajax({
+               type:'POST',
+               url: targetURL,
+               success:function(response){ 
+               getSysData();
+             }
+         }); 
+         })
+    });
+</script>
     
 
 
